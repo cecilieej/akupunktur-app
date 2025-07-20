@@ -1,0 +1,326 @@
+.patient-info {
+  height: 100%;
+}
+
+.patient-header {
+  margin-bottom: 2rem;
+}
+
+.patient-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #A7BF97;
+  padding-bottom: 0.5rem;
+}
+
+.patient-header h2 {
+  color: #333;
+  margin: 0;
+}
+
+.patient-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-patient-btn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-patient-btn:hover {
+  background: #138496;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(23, 162, 184, 0.3);
+}
+
+.delete-patient-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-patient-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+}
+
+.patient-basic-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.info-item span {
+  color: #333;
+}
+
+.questionnaires-section {
+  margin-bottom: 2rem;
+}
+
+.questionnaires-section h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.questionnaires-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.questionnaire-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.questionnaire-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.questionnaire-info p {
+  margin: 0.25rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.status {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.questionnaire-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-results-btn,
+.copy-link-btn,
+.send-reminder-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-results-btn {
+  background: #28a745;
+  color: white;
+}
+
+.view-results-btn:hover {
+  background: #218838;
+}
+
+.copy-link-btn {
+  background: #17a2b8;
+  color: white;
+}
+
+.copy-link-btn:hover {
+  background: #138496;
+}
+
+.send-reminder-btn {
+  background: #ffc107;
+  color: #212529;
+}
+
+.send-reminder-btn:hover {
+  background: #e0a800;
+}
+
+.no-questionnaires {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.add-questionnaire-btn {
+  background: #A7BF97;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-questionnaire-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(167, 191, 151, 0.3);
+}
+
+.notes-section h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.notes-textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: #A7BF97;
+  box-shadow: 0 0 0 3px rgba(167, 191, 151, 0.1);
+}
+
+.save-notes-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.save-notes-btn:hover {
+  background: #218838;
+}
+
+/* Enhanced responsive design for PatientInfo */
+@media (max-width: 768px) {
+  .patient-title-row {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .patient-basic-info {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .questionnaire-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .questionnaire-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .pending-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  
+  .view-results-btn,
+  .copy-link-btn,
+  .send-reminder-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .notes-textarea {
+    font-size: 0.9rem;
+  }
+  
+  /* Mobile responsive adjustments for patient actions */
+  .patient-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .edit-patient-btn,
+  .delete-patient-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-info {
+    font-size: 0.9rem;
+  }
+  
+  .patient-title-row h2 {
+    font-size: 1.3rem;
+  }
+  
+  .edit-patient-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .info-item label {
+    font-size: 0.8rem;
+  }
+  
+  .info-item span {
+    font-size: 0.9rem;
+  }
+  
+  .questionnaire-item {
+    padding: 0.75rem;
+  }
+  
+  .questionnaire-info h4 {
+    font-size: 0.95rem;
+  }
+  
+  .add-questionnaire-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
