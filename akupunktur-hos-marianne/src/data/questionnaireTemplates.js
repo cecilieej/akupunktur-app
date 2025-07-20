@@ -3,52 +3,52 @@ export const questionnaireTemplates = {
   'who5': {
     id: 'who5',
     title: 'WHO-5 Well-Being Index',
-    description: 'Measures psychological well-being over the past two weeks',
-    instructions: 'Please indicate for each of the five statements which is closest to how you have been feeling over the last two weeks.',
+    //description: 'Measures psychological well-being over the past two weeks',
+    instructions: 'Sæt venligst, ved hvert af de 5 udsagn, et kryds i det felt der kommer tættest på, hvordan du har følt dig i de seneste to uger. Bemærk at et højere tal står for bedre trivsel. Eksempel: Hvis du har følt dig glad og i godt humør i lidt mere end halvdelen af tiden i de sidste to uger, så sæt krydset i feltet med 3-tallet i øverste højre hjørne.',
     questions: [
       {
         id: 1,
         type: 'scale',
-        question: 'I have felt cheerful and in good spirits',
+        question: 'Jeg har følt mig glad og i godt humør',
         min: 0,
         max: 5,
-        labels: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time'],
+        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
         required: true
-      },
+      }, 
       {
         id: 2,
         type: 'scale',
-        question: 'I have felt calm and relaxed',
+        question: 'Jeg har følt mig rolig og afslappet',
         min: 0,
         max: 5,
-        labels: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time'],
+        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
         required: true
       },
       {
         id: 3,
         type: 'scale',
-        question: 'I have felt active and vigorous',
+        question: 'Jeg har følt mig aktiv og energisk',
         min: 0,
         max: 5,
-        labels: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time'],
+        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
         required: true
       },
       {
         id: 4,
         type: 'scale',
-        question: 'I woke up feeling fresh and rested',
+        question: 'Jeg vågnede op og følte mig frisk og udhvilet',
         min: 0,
         max: 5,
-        labels: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time'],
+        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
         required: true
       },
       {
         id: 5,
         type: 'scale',
-        question: 'My daily life has been filled with things that interest me',
+        question: 'Min dagligdag har været fyldt med ting der interesserer mig',
         min: 0,
         max: 5,
-        labels: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time'],
+        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
         required: true
       }
     ]

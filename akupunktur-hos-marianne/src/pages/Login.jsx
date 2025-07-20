@@ -24,10 +24,10 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <h1>Akupunktur hos Marianne</h1>
-        <h2>Employee Login</h2>
+        <p>Indtast dine login oplysninger herunder</p>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Brugernavn</label>
             <input
               type="text"
               id="username"
@@ -38,7 +38,7 @@ const Login = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Adgangskode</label>
             <input
               type="password"
               id="password"

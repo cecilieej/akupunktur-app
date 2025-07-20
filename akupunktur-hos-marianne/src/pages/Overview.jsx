@@ -35,8 +35,8 @@ const Overview = () => {
         email: 'lars.nielsen@email.com',
         condition: 'Stress og angst',
         questionnaires: [
-          { id: 3, title: 'Indledende Helbredsvurdering', date: '2024-11-20', status: 'completed' },
-          { id: 4, title: 'WHO-5 Trivselsskala', date: '2024-12-20', status: 'pending' }
+          { id: 3, title: 'Indledende Helbredsvurdering', date: '2025-07-20', status: 'completed' },
+          { id: 4, title: 'WHO-5 Trivselsskala', date: '2025-07-20', status: 'pending' }
         ]
       }
     ]
