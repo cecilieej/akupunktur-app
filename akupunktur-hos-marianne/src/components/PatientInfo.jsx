@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { translations } from '../data/translations'
 import './PatientInfo.css'
 
-const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires }) => {
+const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAddQuestionnaire }) => {
   const { language } = useLanguage()
   const t = translations[language]
+  const [showAddQuestionnaire, setShowAddQuestionnaire] = useState(false)
+  const [selectedQuestionnaire, setSelectedQuestionnaire] = useState('')
   
   if (!patient) {
     return <div>No patient selected</div>
@@ -40,19 +43,19 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires }) => 
     }
   }
 
+  const handleAddQuestionnaire = () => {
+    if (selectedQuestionnaire && onAddQuestionnaire) {
+      onAddQuestionnaire(patient.id, selectedQuestionnaire)
+      setSelectedQuestionnaire('')
+      setShowAddQuestionnaire(false)
+    }
+  }
+
   return (
     <div className="patient-info">
       <div className="patient-header">
         <div className="patient-title-row">
           <h2>{patient.name}</h2>
-          <div className="patient-actions">
-            <button className="edit-patient-btn" onClick={onEdit}>
-              {t.editPatientBtn}
-            </button>
-            <button className="delete-patient-btn" onClick={onDelete}>
-              {t.deletePatientBtn}
-            </button>
-          </div>
         </div>
         <div className="patient-basic-info">
           <div className="info-item">
@@ -115,9 +118,48 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires }) => 
           <p className="no-questionnaires">{t.noQuestionnaires}</p>
         )}
         
-        <button className="add-questionnaire-btn">
-          {t.createNewQuestionnaire}
-        </button>
+        {!showAddQuestionnaire ? (
+          <button 
+            className="add-questionnaire-btn"
+            onClick={() => setShowAddQuestionnaire(true)}
+          >
+            {t.createNewQuestionnaire}
+          </button>
+        ) : (
+          <div className="add-questionnaire-form">
+            <h4>{t.selectQuestionnaire}</h4>
+            <select 
+              value={selectedQuestionnaire}
+              onChange={(e) => setSelectedQuestionnaire(e.target.value)}
+              className="questionnaire-select"
+            >
+              <option value="">{t.chooseQuestionnaire}</option>
+              {availableQuestionnaires.map(q => (
+                <option key={q.id} value={q.id}>
+                  {q.title}
+                </option>
+              ))}
+            </select>
+            <div className="questionnaire-form-actions">
+              <button 
+                className="add-btn"
+                onClick={handleAddQuestionnaire}
+                disabled={!selectedQuestionnaire}
+              >
+                {t.addQuestionnaire}
+              </button>
+              <button 
+                className="cancel-btn"
+                onClick={() => {
+                  setShowAddQuestionnaire(false)
+                  setSelectedQuestionnaire('')
+                }}
+              >
+                {t.cancel}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="notes-section">
@@ -128,6 +170,15 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires }) => 
           rows="4"
         ></textarea>
         <button className="save-notes-btn">{t.saveNotes}</button>
+      </div>
+
+      <div className="patient-actions">
+        <button className="edit-patient-btn" onClick={onEdit}>
+          {t.editPatientBtn}
+        </button>
+        <button className="delete-patient-btn" onClick={onDelete}>
+          {t.deletePatientBtn}
+        </button>
       </div>
     </div>
   )

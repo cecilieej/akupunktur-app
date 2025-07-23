@@ -23,8 +23,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>Akupunktur hos Marianne</h1>
-        <p>Indtast dine login oplysninger herunder</p>
+        <h1>Login</h1>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="username">Brugernavn</label>
@@ -49,7 +48,7 @@ const Login = () => {
             />
           </div>
           <button type="submit" className="login-button">
-            Login
+            LOGIN
           </button>
         </form>
       </div>

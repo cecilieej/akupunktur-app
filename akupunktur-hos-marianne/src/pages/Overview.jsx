@@ -31,7 +31,7 @@ const Overview = () => {
         id: 2,
         name: 'Lars Nielsen',
         age: 42,
-        phone: '+45 98 76 54 32',
+        phone: '98 76 54 32',
         email: 'lars.nielsen@email.com',
         condition: 'Stress og angst',
         questionnaires: [
@@ -71,7 +71,12 @@ const Overview = () => {
   })
 
   const handleSelectPatient = (patient) => {
-    setSelectedPatient(patient)
+    // Toggle functionality: if clicking the same patient, unselect it
+    if (selectedPatient && selectedPatient.id === patient.id) {
+      setSelectedPatient(null)
+    } else {
+      setSelectedPatient(patient)
+    }
     setShowAddForm(false)
     setShowEditForm(false)
   }
@@ -144,6 +149,26 @@ const Overview = () => {
         setSelectedPatient(null)
       }
     }
+  }
+
+  const handleAddQuestionnaireToPatient = (patientId, questionnaireId) => {
+    const template = availableQuestionnaires.find(q => q.id === questionnaireId)
+    const newQuestionnaire = {
+      id: Math.random().toString(36).substr(2, 9),
+      title: template.title,
+      date: new Date().toISOString().split('T')[0],
+      status: 'pending',
+      templateId: questionnaireId
+    }
+
+    const updatedPatients = patients.map(p => 
+      p.id === patientId 
+        ? { ...p, questionnaires: [...(p.questionnaires || []), newQuestionnaire] }
+        : p
+    )
+    
+    setPatients(updatedPatients)
+    setSelectedPatient(updatedPatients.find(p => p.id === patientId))
   }
 
   const handleInputChange = (e) => {
@@ -311,6 +336,7 @@ const Overview = () => {
               patient={selectedPatient} 
               onEdit={() => handleEditPatient(selectedPatient)}
               onDelete={() => handleDeletePatient(selectedPatient.id)}
+              onAddQuestionnaire={handleAddQuestionnaireToPatient}
               availableQuestionnaires={availableQuestionnaires}
             />
           ) : (

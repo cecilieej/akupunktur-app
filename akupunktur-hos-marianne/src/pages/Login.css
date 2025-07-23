@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #A7BF97 0%, #8FAE7F 100%);
+  background: #F5E8DB;
 }
 
 .login-card {
@@ -17,7 +19,8 @@
 }
 
 .login-card h1 {
-  color: #333;
+  font-family: 'DM Serif Display', serif;
+  color: #605850;
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
 }

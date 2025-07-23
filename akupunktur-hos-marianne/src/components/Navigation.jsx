@@ -19,12 +19,6 @@ const Navigation = () => {
         <h2>Akupunktur hos Marianne</h2>
       </div>
       <div className="nav-links">
-        <Link 
-          to="/overview" 
-          className={location.pathname === '/overview' ? 'nav-link active' : 'nav-link'}
-        >
-          {t.patientOverview}
-        </Link>
         <button 
           onClick={toggleLanguage}
           className="language-toggle"
