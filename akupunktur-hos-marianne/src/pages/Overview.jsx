@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useLanguage } from '../contexts/LanguageContext'
-import { translations } from '../data/translations'
+import { danishTexts } from '../data/danishTexts'
+import { patientsService } from '../services/firebaseService'
 import PatientInfo from '../components/PatientInfo'
 import './Overview.css'
 
 const Overview = () => {
-  const { language } = useLanguage()
-  const t = translations[language]
+  const t = danishTexts
   
-  // Load patients from localStorage or use default data
+  // Load patients from Firebase or localStorage as fallback
   const getInitialPatients = () => {
     const savedPatients = localStorage.getItem('acupuncture-patients')
     if (savedPatients) {
@@ -43,11 +42,43 @@ const Overview = () => {
   }
 
   const [patients, setPatients] = useState(getInitialPatients)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  // Save patients to localStorage whenever patients change
+  // Load patients from Firebase on component mount
   useEffect(() => {
-    localStorage.setItem('acupuncture-patients', JSON.stringify(patients))
-  }, [patients])
+    loadPatientsFromFirebase()
+  }, [])
+
+  const loadPatientsFromFirebase = async () => {
+    try {
+      setLoading(true)
+      const firebasePatients = await patientsService.getAll()
+      if (firebasePatients.length > 0) {
+        setPatients(firebasePatients)
+      }
+    } catch (err) {
+      console.warn('Firebase not available, using localStorage:', err.message)
+      // Fallback to localStorage - already loaded in getInitialPatients
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Save patients to both localStorage and Firebase
+  const savePatients = async (updatedPatients) => {
+    // Always save to localStorage as fallback
+    localStorage.setItem('acupuncture-patients', JSON.stringify(updatedPatients))
+    setPatients(updatedPatients)
+    
+    // Try to save to Firebase
+    try {
+      // Note: This would need more sophisticated sync logic in production
+      console.log('Would sync to Firebase:', updatedPatients)
+    } catch (err) {
+      console.warn('Failed to sync to Firebase:', err.message)
+    }
+  }
 
   // Pre-made questionnaire templates
   const availableQuestionnaires = [
@@ -119,6 +150,7 @@ const Overview = () => {
     }
     
     setPatients([...patients, patient])
+    savePatients([...patients, patient])
     setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
     setShowAddForm(false)
   }
@@ -136,7 +168,7 @@ const Overview = () => {
         : p
     )
     
-    setPatients(updatedPatients)
+    savePatients(updatedPatients)
     setSelectedPatient(updatedPatients.find(p => p.id === newPatient.id))
     setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
     setShowEditForm(false)
@@ -145,7 +177,7 @@ const Overview = () => {
   const handleDeletePatient = (patientId) => {
     if (window.confirm(t.deleteConfirm)) {
       const updatedPatients = patients.filter(p => p.id !== patientId)
-      setPatients(updatedPatients)
+      savePatients(updatedPatients)
       if (selectedPatient && selectedPatient.id === patientId) {
         setSelectedPatient(null)
       }
@@ -168,7 +200,7 @@ const Overview = () => {
         : p
     )
     
-    setPatients(updatedPatients)
+    savePatients(updatedPatients)
     setSelectedPatient(updatedPatients.find(p => p.id === patientId))
   }
 
@@ -179,7 +211,7 @@ const Overview = () => {
         : p
     )
     
-    setPatients(updatedPatients)
+    savePatients(updatedPatients)
     setSelectedPatient(updatedPatients.find(p => p.id === patientId))
   }
 

@@ -1,16 +1,32 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { authService } from '../services/authService'
+import { danishTexts } from '../data/danishTexts'
 import './Login.css'
 
 const Login = () => {
+  const navigate = useNavigate()
+  const t = danishTexts
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
   })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // TODO: Implement authentication logic
-    console.log('Login attempt:', credentials)
+    setLoading(true)
+    setError('')
+    
+    try {
+      await authService.login(credentials.username, credentials.password)
+      navigate('/overview')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e) => {
@@ -23,10 +39,10 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>Login</h1>
+        <h1>{t.employeeLogin}</h1>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Brugernavn</label>
+            <label htmlFor="username">{t.username}</label>
             <input
               type="text"
               id="username"
@@ -37,7 +53,7 @@ const Login = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Adgangskode</label>
+            <label htmlFor="password">{t.password}</label>
             <input
               type="password"
               id="password"
@@ -47,8 +63,13 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="login-button">
-            LOGIN
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Logger ind...' : t.login}
           </button>
         </form>
       </div>

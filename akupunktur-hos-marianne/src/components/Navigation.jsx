@@ -1,16 +1,28 @@
-import { Link, useLocation } from 'react-router-dom'
-import { useLanguage } from '../contexts/LanguageContext'
-import { translations } from '../data/translations'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { authService } from '../services/authService'
+import { danishTexts } from '../data/danishTexts'
 import './Navigation.css'
 
 const Navigation = () => {
   const location = useLocation()
-  const { language, toggleLanguage } = useLanguage()
-  const t = translations[language]
+  const navigate = useNavigate()
+  const t = danishTexts
   
-  // Don't show navigation on login page or questionnaire page
-  if (location.pathname === '/login' || location.pathname.startsWith('/questionnaire')) {
+  // Don't show navigation on login page or patient questionnaire pages
+  if (location.pathname === '/login' || location.pathname.includes('/questionnaire/')) {
     return null
+  }
+
+  // Don't show if not authenticated
+  if (!authService.isAuthenticated()) {
+    return null
+  }
+
+  const currentUser = authService.getCurrentUser()
+
+  const handleLogout = () => {
+    authService.logout()
+    navigate('/login')
   }
 
   return (
@@ -19,16 +31,12 @@ const Navigation = () => {
         <h2>Akupunktur hos Marianne</h2>
       </div>
       <div className="nav-links">
-        <button 
-          onClick={toggleLanguage}
-          className="language-toggle"
-          aria-label="Toggle language"
-        >
-          {t.toggleLanguage}
-        </button>
-        <Link to="/login" className="nav-link logout">
+        <span className="user-info">
+          Velkommen, {currentUser?.name}
+        </span>
+        <button onClick={handleLogout} className="nav-link logout">
           {t.logout}
-        </Link>
+        </button>
       </div>
     </nav>
   )

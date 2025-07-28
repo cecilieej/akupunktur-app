@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import { useLanguage } from '../contexts/LanguageContext'
-import { translations } from '../data/translations'
+import { danishTexts } from '../data/danishTexts'
 import './PatientInfo.css'
 
 const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAddQuestionnaire, onDeleteQuestionnaire }) => {
-  const { language } = useLanguage()
-  const t = translations[language]
+  const t = danishTexts
   const [showAddQuestionnaire, setShowAddQuestionnaire] = useState(false)
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState('')
   
