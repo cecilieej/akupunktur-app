@@ -153,7 +153,19 @@
   box-sizing: border-box;
 }
 
-.add-patient-form input:focus {
+.add-patient-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  background: white;
+}
+
+.add-patient-form input:focus,
+.add-patient-form select:focus {
   outline: none;
   border-color: #A7BF97;
   box-shadow: 0 0 0 3px rgba(167, 191, 151, 0.1);

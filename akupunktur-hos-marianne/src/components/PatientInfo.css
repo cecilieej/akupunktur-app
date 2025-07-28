@@ -182,6 +182,21 @@
   background: #e0a800;
 }
 
+.delete-questionnaire-btn {
+  background: #C2958B;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-questionnaire-btn:hover {
+  background: #B5877C;
+}
+
 .no-questionnaires {
   color: #666;
   font-style: italic;
@@ -189,7 +204,7 @@
 }
 
 .add-questionnaire-btn {
-  background: #A7BF97;
+  background: #6c757d;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -201,8 +216,9 @@
 }
 
 .add-questionnaire-btn:hover {
+  background: #5a6268;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(167, 191, 151, 0.3);
+  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
 }
 
 .add-questionnaire-form {

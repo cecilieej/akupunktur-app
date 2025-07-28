@@ -3,7 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { translations } from '../data/translations'
 import './PatientInfo.css'
 
-const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAddQuestionnaire }) => {
+const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAddQuestionnaire, onDeleteQuestionnaire }) => {
   const { language } = useLanguage()
   const t = translations[language]
   const [showAddQuestionnaire, setShowAddQuestionnaire] = useState(false)
@@ -48,6 +48,33 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
       onAddQuestionnaire(patient.id, selectedQuestionnaire)
       setSelectedQuestionnaire('')
       setShowAddQuestionnaire(false)
+    }
+  }
+
+  const handleDeleteQuestionnaire = (questionnaireId) => {
+    if (window.confirm(t.deleteQuestionnaireConfirm) && onDeleteQuestionnaire) {
+      onDeleteQuestionnaire(patient.id, questionnaireId)
+    }
+  }
+
+  const handleCopyLink = async (questionnaire) => {
+    // For now, this will generate a mock link until Firebase is connected
+    // In real implementation, this would create the questionnaire in Firebase first
+    const mockToken = Math.random().toString(36).substr(2, 32)
+    const link = `${window.location.origin}/questionnaire/${patient.id}/${questionnaire.templateId}/${mockToken}`
+    
+    try {
+      await navigator.clipboard.writeText(link)
+      alert('Link kopieret til udklipsholder!')
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = link
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      alert('Link kopieret til udklipsholder!')
     }
   }
 
@@ -102,11 +129,17 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
                     </button>
                   ) : (
                     <div className="pending-actions">
-                      <button className="copy-link-btn">
+                      <button 
+                        className="copy-link-btn"
+                        onClick={() => handleCopyLink(questionnaire)}
+                      >
                         {t.copyPatientLink}
                       </button>
-                      <button className="send-reminder-btn">
-                        {t.sendReminder}
+                      <button 
+                        className="delete-questionnaire-btn"
+                        onClick={() => handleDeleteQuestionnaire(questionnaire.id)}
+                      >
+                        {t.deleteQuestionnaire}
                       </button>
                     </div>
                   )}

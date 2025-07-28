@@ -52,6 +52,7 @@ const Overview = () => {
   // Pre-made questionnaire templates
   const availableQuestionnaires = [
     { id: 'who5', title: t.questionnaireTemplates['who5'].title, description: t.questionnaireTemplates['who5'].description },
+    { id: 'rbmt', title: t.questionnaireTemplates['rbmt'].title, description: t.questionnaireTemplates['rbmt'].description },
     { id: 'pain-scale', title: t.questionnaireTemplates['pain-scale'].title, description: t.questionnaireTemplates['pain-scale'].description },
     { id: 'initial-health', title: t.questionnaireTemplates['initial-health'].title, description: t.questionnaireTemplates['initial-health'].description },
     { id: 'treatment-progress', title: t.questionnaireTemplates['treatment-progress'].title, description: t.questionnaireTemplates['treatment-progress'].description },
@@ -171,6 +172,17 @@ const Overview = () => {
     setSelectedPatient(updatedPatients.find(p => p.id === patientId))
   }
 
+  const handleDeleteQuestionnaireFromPatient = (patientId, questionnaireId) => {
+    const updatedPatients = patients.map(p => 
+      p.id === patientId 
+        ? { ...p, questionnaires: p.questionnaires.filter(q => q.id !== questionnaireId) }
+        : p
+    )
+    
+    setPatients(updatedPatients)
+    setSelectedPatient(updatedPatients.find(p => p.id === patientId))
+  }
+
   const handleInputChange = (e) => {
     setNewPatient({
       ...newPatient,
@@ -278,14 +290,20 @@ const Overview = () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="condition">{t.condition}</label>
-                  <input
-                    type="text"
+                  <select
                     id="condition"
                     name="condition"
                     value={newPatient.condition}
                     onChange={handleInputChange}
                     required
-                  />
+                  >
+                    <option value="">{t.chooseCondition}</option>
+                    {Object.entries(t.conditionOptions).map(([key, value]) => (
+                      <option key={key} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 {/* Questionnaire selection - only show when adding new patient */}
@@ -337,6 +355,7 @@ const Overview = () => {
               onEdit={() => handleEditPatient(selectedPatient)}
               onDelete={() => handleDeletePatient(selectedPatient.id)}
               onAddQuestionnaire={handleAddQuestionnaireToPatient}
+              onDeleteQuestionnaire={handleDeleteQuestionnaireFromPatient}
               availableQuestionnaires={availableQuestionnaires}
             />
           ) : (

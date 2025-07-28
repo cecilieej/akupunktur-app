@@ -24,6 +24,16 @@ export const translations = {
     phone: 'Telefon',
     email: 'E-mail',
     condition: 'Tilstand',
+    conditionOptions: {
+      hjernerystelse: 'Hjernerystelse',
+      stress: 'Stress',
+      migraene: 'Migræne',
+      rygsmerter: 'Rygsmerter',
+      angst: 'Angst',
+      sovnproblemer: 'Søvnproblemer',
+      andet: 'Andet'
+    },
+    chooseCondition: 'Vælg tilstand...',
     initialQuestionnaires: 'Indledende Spørgeskemaer',
     questionnaireDescription: 'Vælg hvilke spørgeskemaer denne patient skal udfylde:',
     cancel: 'Annuller',
@@ -43,7 +53,8 @@ export const translations = {
     addQuestionnaire: 'Tilføj Spørgeskema',
     viewResults: 'Se Resultater',
     copyPatientLink: 'Kopier Patient Link',
-    sendReminder: 'Send Påmindelse',
+    deleteQuestionnaire: 'Slet',
+    deleteQuestionnaireConfirm: 'Er du sikker på, at du vil slette dette spørgeskema?',
     
     // Patient card fields
     ageLabel: 'Alder',
@@ -60,6 +71,10 @@ export const translations = {
       'who5': {
         title: 'WHO-5 Trivselsskala',
         description: 'Måler psykologisk trivsel'
+      },
+      'rbmt': {
+        title: 'Rivermead Behavioural Memory Test (RBMT)',
+        description: 'Test af hukommelse og kognitive funktioner'
       },
       'pain-scale': {
         title: 'Smerteassessmentskala',
@@ -123,6 +138,16 @@ export const translations = {
     phone: 'Phone',
     email: 'Email',
     condition: 'Condition',
+    conditionOptions: {
+      hjernerystelse: 'Concussion',
+      stress: 'Stress',
+      migraene: 'Migraine',
+      rygsmerter: 'Back Pain',
+      angst: 'Anxiety',
+      sovnproblemer: 'Sleep Problems',
+      andet: 'Other'
+    },
+    chooseCondition: 'Choose condition...',
     initialQuestionnaires: 'Initial Questionnaires',
     questionnaireDescription: 'Select which questionnaires this patient should complete:',
     cancel: 'Cancel',
@@ -142,7 +167,8 @@ export const translations = {
     addQuestionnaire: 'Add Questionnaire',
     viewResults: 'View Results',
     copyPatientLink: 'Copy Patient Link',
-    sendReminder: 'Send Reminder',
+    deleteQuestionnaire: 'Delete',
+    deleteQuestionnaireConfirm: 'Are you sure you want to delete this questionnaire?',
     
     // Patient card fields
     ageLabel: 'Age',
@@ -159,6 +185,10 @@ export const translations = {
       'who5': {
         title: 'WHO-5 Well-Being Index',
         description: 'Measures psychological well-being'
+      },
+      'rbmt': {
+        title: 'Rivermead Behavioural Memory Test (RBMT)',
+        description: 'Memory and cognitive function assessment'
       },
       'pain-scale': {
         title: 'Pain Assessment Scale',
