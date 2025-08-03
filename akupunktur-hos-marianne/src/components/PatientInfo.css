@@ -204,7 +204,7 @@
 }
 
 .add-questionnaire-btn {
-  background: #6c757d;
+  background: #8B9DC3;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -216,9 +216,9 @@
 }
 
 .add-questionnaire-btn:hover {
-  background: #5a6268;
+  background: #7A8BB8;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+  box-shadow: 0 5px 15px rgba(139, 157, 195, 0.3);
 }
 
 .add-questionnaire-form {

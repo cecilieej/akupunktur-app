@@ -8,7 +8,7 @@ const Login = () => {
   const navigate = useNavigate()
   const t = danishTexts
   const [credentials, setCredentials] = useState({
-    username: '',
+    email: '',
     password: ''
   })
   const [error, setError] = useState('')
@@ -20,7 +20,7 @@ const Login = () => {
     setError('')
     
     try {
-      await authService.login(credentials.username, credentials.password)
+      await authService.login(credentials.email, credentials.password)
       navigate('/overview')
     } catch (err) {
       setError(err.message)
@@ -42,13 +42,14 @@ const Login = () => {
         <h1>{t.employeeLogin}</h1>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">{t.username}</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={credentials.username}
+              type="email"
+              id="email"
+              name="email"
+              value={credentials.email}
               onChange={handleChange}
+              placeholder="eks. admin@akupunktur.dk"
               required
             />
           </div>
@@ -72,6 +73,13 @@ const Login = () => {
             {loading ? 'Logger ind...' : t.login}
           </button>
         </form>
+        
+        {/* Demo credentials for testing */}
+        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '12px' }}>
+          <strong>Demo login:</strong><br />
+          admin@akupunktur.dk / password123<br />
+          medarbejder1@akupunktur.dk / password123
+        </div>
       </div>
     </div>
   )

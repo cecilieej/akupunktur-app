@@ -47,6 +47,19 @@
   font-weight: 600;
 }
 
+.nav-link.admin-link {
+  background: white;
+  color: #2c3e50;
+  border: none;
+  font-weight: 600;
+}
+
+.nav-link.admin-link:hover {
+  background: #f8f9fa;
+  color: #2c3e50;
+  transform: translateY(-1px);
+}
+
 .nav-link.logout {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);

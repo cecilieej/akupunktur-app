@@ -20,9 +20,15 @@ const Navigation = () => {
 
   const currentUser = authService.getCurrentUser()
 
-  const handleLogout = () => {
-    authService.logout()
-    navigate('/login')
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+      navigate('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Still navigate to login even if logout fails
+      navigate('/login')
+    }
   }
 
   return (
@@ -31,6 +37,14 @@ const Navigation = () => {
         <h2>Akupunktur hos Marianne</h2>
       </div>
       <div className="nav-links">
+        {currentUser?.role === 'admin' && (
+          <Link 
+            to={location.pathname.includes('/admin') ? '/overview' : '/admin/questionnaires'} 
+            className="nav-link admin-link"
+          >
+            {location.pathname.includes('/admin') ? 'Oversigt' : 'Admin'}
+          </Link>
+        )}
         <span className="user-info">
           Velkommen, {currentUser?.name}
         </span>

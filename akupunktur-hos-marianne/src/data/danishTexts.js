@@ -11,7 +11,7 @@ export const danishTexts = {
   login: 'Log ind',
   
   // Overview page
-  addNewPatient: 'Tilføj Ny Patient',
+  addNewPatient: 'Tilføj Patient',
   patients: 'Patienter',
   selectPatientMessage: 'Vælg en patient for at se detaljer eller tilføj en ny patient',
   
@@ -47,7 +47,7 @@ export const danishTexts = {
   addTreatmentNotes: 'Tilføj behandlingsnotater, observationer eller plan for næste session...',
   saveNotes: 'Gem Notater',
   noQuestionnaires: 'Ingen spørgeskemaer endnu',
-  createNewQuestionnaire: 'Opret Nyt Spørgeskema',
+  createNewQuestionnaire: 'Nyt spørgeskema til patient',
   selectQuestionnaire: 'Vælg Spørgeskema',
   chooseQuestionnaire: 'Vælg et spørgeskema...',
   addQuestionnaire: 'Tilføj Spørgeskema',

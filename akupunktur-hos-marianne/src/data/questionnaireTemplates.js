@@ -53,133 +53,6 @@ export const questionnaireTemplates = {
       }
     ]
   },
-  
-  'pain-scale': {
-    id: 'pain-scale',
-    title: 'Pain Assessment Scale',
-    description: 'Comprehensive pain evaluation questionnaire',
-    instructions: 'Please answer the following questions about your pain experience.',
-    questions: [
-      {
-        id: 1,
-        type: 'scale',
-        question: 'Rate your pain right now on a scale from 0-10',
-        min: 0,
-        max: 10,
-        labels: ['No pain', 'Worst pain imaginable'],
-        required: true
-      },
-      {
-        id: 2,
-        type: 'scale',
-        question: 'Rate your average pain over the past week on a scale from 0-10',
-        min: 0,
-        max: 10,
-        labels: ['No pain', 'Worst pain imaginable'],
-        required: true
-      },
-      {
-        id: 3,
-        type: 'multiple-choice',
-        question: 'How would you describe your pain?',
-        options: [
-          'Sharp/stabbing',
-          'Dull/aching',
-          'Burning',
-          'Throbbing',
-          'Cramping',
-          'Other'
-        ],
-        required: true
-      },
-      {
-        id: 4,
-        type: 'checkbox',
-        question: 'What makes your pain worse? (Select all that apply)',
-        options: [
-          'Movement',
-          'Sitting',
-          'Standing',
-          'Walking',
-          'Lying down',
-          'Stress',
-          'Weather changes',
-          'Physical activity'
-        ],
-        required: false
-      },
-      {
-        id: 5,
-        type: 'textarea',
-        question: 'Please describe how pain affects your daily activities',
-        required: false
-      }
-    ]
-  },
-
-  'initial-health': {
-    id: 'initial-health',
-    title: 'Initial Health Assessment',
-    description: 'General health and medical history questionnaire',
-    instructions: 'Please provide accurate information about your health history to help us provide the best treatment.',
-    questions: [
-      {
-        id: 1,
-        type: 'text',
-        question: 'What is your main health concern or reason for seeking acupuncture treatment?',
-        required: true
-      },
-      {
-        id: 2,
-        type: 'multiple-choice',
-        question: 'How long have you been experiencing this condition?',
-        options: [
-          'Less than 1 week',
-          '1-4 weeks',
-          '1-3 months',
-          '3-6 months',
-          '6-12 months',
-          'More than 1 year'
-        ],
-        required: true
-      },
-      {
-        id: 3,
-        type: 'checkbox',
-        question: 'Do you have any of the following conditions? (Select all that apply)',
-        options: [
-          'Diabetes',
-          'High blood pressure',
-          'Heart disease',
-          'Arthritis',
-          'Depression/Anxiety',
-          'Chronic pain',
-          'Sleep disorders',
-          'Digestive issues'
-        ],
-        required: false
-      },
-      {
-        id: 4,
-        type: 'text',
-        question: 'Please list any medications you are currently taking:',
-        required: false
-      },
-      {
-        id: 5,
-        type: 'multiple-choice',
-        question: 'Have you had acupuncture treatment before?',
-        options: [
-          'Never',
-          'Once',
-          'A few times',
-          'Many times',
-          'Regular treatments'
-        ],
-        required: true
-      }
-    ]
-  },
 
   'treatment-progress': {
     id: 'treatment-progress',
@@ -295,6 +168,60 @@ export const questionnaireTemplates = {
           'Very unhealthy'
         ],
         required: true
+      }
+    ]
+  },
+
+  'rbmt': {
+    id: 'rbmt',
+    title: 'Rivermead Behavioural Memory Test (RBMT) - Forenkling',
+    description: 'Dette spørgeskema hjælper med at vurdere forskellige aspekter af din hukommelse og kognitive funktioner.',
+    instructions: 'Besvar venligst alle spørgsmål så nøjagtigt som muligt baseret på dine oplevelser i de sidste 4 uger.',
+    questions: [
+      {
+        id: 1,
+        question: 'Hvor ofte glemmer du, hvor du har lagt ting?',
+        type: 'multiple-choice',
+        options: [
+          'Aldrig eller næsten aldrig',
+          'Sjældent',
+          'Nogle gange',
+          'Ofte',
+          'Meget ofte'
+        ],
+        required: true
+      },
+      {
+        id: 2,
+        question: 'Hvor ofte glemmer du navne på personer, du kender godt?',
+        type: 'multiple-choice',
+        options: [
+          'Aldrig eller næsten aldrig',
+          'Sjældent',
+          'Nogle gange',
+          'Ofte',
+          'Meget ofte'
+        ],
+        required: true
+      },
+      {
+        id: 3,
+        question: 'Hvor ofte mister du tråden i en samtale?',
+        type: 'multiple-choice',
+        options: [
+          'Aldrig eller næsten aldrig',
+          'Sjældent',
+          'Nogle gange',
+          'Ofte',
+          'Meget ofte'
+        ],
+        required: true
+      },
+      {
+        id: 4,
+        question: 'Beskriv kort eventuelle specifikke hukommelsesproblemer, du har oplevet:',
+        type: 'textarea',
+        required: false
       }
     ]
   }

@@ -7,6 +7,8 @@ import Overview from './pages/Overview'
 import Questionnaire from './pages/Questionnaire'
 import QuestionnaireForm from './components/QuestionnaireForm'
 import QuestionnaireSuccess from './components/QuestionnaireSuccess'
+import QuestionnaireManager from './pages/admin/QuestionnaireManager'
+import QuestionnaireEditor from './pages/admin/QuestionnaireEditor'
 import './App.css'
 
 function App() {
@@ -42,6 +44,38 @@ function App() {
                   <Navigation />
                   <main className="main-content">
                     <Questionnaire />
+                  </main>
+                </div>
+              </ProtectedRoute>
+            } />
+            
+            {/* Admin routes */}
+            <Route path="/admin/questionnaires" element={
+              <ProtectedRoute>
+                <div>
+                  <Navigation />
+                  <main className="main-content">
+                    <QuestionnaireManager />
+                  </main>
+                </div>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/questionnaires/create" element={
+              <ProtectedRoute>
+                <div>
+                  <Navigation />
+                  <main className="main-content">
+                    <QuestionnaireEditor />
+                  </main>
+                </div>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/questionnaires/edit/:id" element={
+              <ProtectedRoute>
+                <div>
+                  <Navigation />
+                  <main className="main-content">
+                    <QuestionnaireEditor />
                   </main>
                 </div>
               </ProtectedRoute>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { danishTexts } from '../data/danishTexts'
 import { patientsService } from '../services/firebaseService'
+import { questionnaireService } from '../services/questionnaireService'
 import PatientInfo from '../components/PatientInfo'
 import './Overview.css'
 
@@ -44,11 +45,38 @@ const Overview = () => {
   const [patients, setPatients] = useState(getInitialPatients)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [availableQuestionnaires, setAvailableQuestionnaires] = useState([])
 
   // Load patients from Firebase on component mount
   useEffect(() => {
     loadPatientsFromFirebase()
+    loadQuestionnaires()
   }, [])
+
+  const loadQuestionnaires = async () => {
+    try {
+      const questionnaires = await questionnaireService.getAllQuestionnaires()
+      // Format questionnaires for the dropdown
+      const formattedQuestionnaires = questionnaires.map(q => ({
+        id: q.id,
+        title: q.title,
+        description: q.description || 'Ingen beskrivelse'
+      }))
+      setAvailableQuestionnaires(formattedQuestionnaires)
+    } catch (err) {
+      console.warn('Failed to load questionnaires from database:', err.message)
+      // Fallback to hardcoded questionnaires
+      const fallbackQuestionnaires = [
+        { id: 'who5', title: 'WHO-5 Trivselsskala', description: 'Måler generel trivsel og humør' },
+        { id: 'rbmt', title: 'RBMT Hukommelsestest', description: 'Test af hverdagshukommelse' },
+        { id: 'pain-scale', title: 'Smerteskala', description: 'Vurdering af smerteniveau' },
+        { id: 'initial-health', title: 'Indledende Helbredsvurdering', description: 'Grundlæggende helbredsstatus' },
+        { id: 'treatment-progress', title: 'Behandlingsforløb', description: 'Opfølgning på behandling' },
+        { id: 'lifestyle', title: 'Livsstil Spørgeskema', description: 'Kost, motion og livsstil' }
+      ]
+      setAvailableQuestionnaires(fallbackQuestionnaires)
+    }
+  }
 
   const loadPatientsFromFirebase = async () => {
     try {
@@ -79,16 +107,6 @@ const Overview = () => {
       console.warn('Failed to sync to Firebase:', err.message)
     }
   }
-
-  // Pre-made questionnaire templates
-  const availableQuestionnaires = [
-    { id: 'who5', title: t.questionnaireTemplates['who5'].title, description: t.questionnaireTemplates['who5'].description },
-    { id: 'rbmt', title: t.questionnaireTemplates['rbmt'].title, description: t.questionnaireTemplates['rbmt'].description },
-    { id: 'pain-scale', title: t.questionnaireTemplates['pain-scale'].title, description: t.questionnaireTemplates['pain-scale'].description },
-    { id: 'initial-health', title: t.questionnaireTemplates['initial-health'].title, description: t.questionnaireTemplates['initial-health'].description },
-    { id: 'treatment-progress', title: t.questionnaireTemplates['treatment-progress'].title, description: t.questionnaireTemplates['treatment-progress'].description },
-    { id: 'lifestyle', title: t.questionnaireTemplates['lifestyle'].title, description: t.questionnaireTemplates['lifestyle'].description }
-  ]
 
   const [selectedPatient, setSelectedPatient] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
