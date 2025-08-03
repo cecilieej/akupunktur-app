@@ -81,12 +81,6 @@ const QuestionnaireManager = () => {
     }
   }
 
-  const handleDeleteTemplate = (template) => {
-    if (window.confirm(`Er du sikker på, at du vil slette template "${template.title}"?`)) {
-      alert('Template sletning er ikke implementeret endnu - dette ville kræve ændringer i questionnaireTemplates.js fil.')
-    }
-  }
-
   if (loading) {
     return (
       <div className="questionnaire-manager">
@@ -153,13 +147,7 @@ const QuestionnaireManager = () => {
                     className="btn btn-primary"
                     onClick={() => handleMigrateTemplate(questionnaire)}
                   >
-                    Migrer til Database
-                  </button>
-                  <button 
-                    className="btn btn-danger"
-                    onClick={() => handleDeleteTemplate(questionnaire)}
-                  >
-                    Slet Template
+                    Migrer
                   </button>
                 </>
               ) : (

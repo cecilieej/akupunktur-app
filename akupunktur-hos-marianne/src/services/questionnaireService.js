@@ -57,10 +57,16 @@ export const questionnaireService = {
   // Create new questionnaire
   async createQuestionnaire(questionnaire) {
     try {
+      // Ensure title is the first field for better Firebase console display
       const questionnaireWithTimestamp = {
-        ...questionnaire,
+        title: questionnaire.title,
+        description: questionnaire.description,
+        questions: questionnaire.questions,
+        createdBy: questionnaire.createdBy,
+        lastModifiedBy: questionnaire.lastModifiedBy,
         createdAt: serverTimestamp(),
-        lastModified: serverTimestamp()
+        lastModified: serverTimestamp(),
+        ...questionnaire  // Include any additional fields
       }
       
       const docRef = await addDoc(
@@ -79,9 +85,14 @@ export const questionnaireService = {
   async updateQuestionnaire(id, updates) {
     try {
       const docRef = doc(db, QUESTIONNAIRES_COLLECTION, id)
+      // Ensure title is the first field for better Firebase console display
       const updateData = {
-        ...updates,
-        lastModified: serverTimestamp()
+        title: updates.title,
+        description: updates.description,
+        questions: updates.questions,
+        lastModifiedBy: updates.lastModifiedBy,
+        lastModified: serverTimestamp(),
+        ...updates  // Include any additional fields
       }
       
       await updateDoc(docRef, updateData)

@@ -1,60 +1,6 @@
 // Predefined questionnaire templates
 export const questionnaireTemplates = {
-  'who5': {
-    id: 'who5',
-    title: 'WHO-5 Well-Being Index',
-    //description: 'Measures psychological well-being over the past two weeks',
-    instructions: 'Sæt venligst, ved hvert af de 5 udsagn, et kryds i det felt der kommer tættest på, hvordan du har følt dig i de seneste to uger. Bemærk at et højere tal står for bedre trivsel. Eksempel: Hvis du har følt dig glad og i godt humør i lidt mere end halvdelen af tiden i de sidste to uger, så sæt krydset i feltet med 3-tallet i øverste højre hjørne.',
-    questions: [
-      {
-        id: 1,
-        type: 'scale',
-        question: 'Jeg har følt mig glad og i godt humør',
-        min: 0,
-        max: 5,
-        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
-        required: true
-      }, 
-      {
-        id: 2,
-        type: 'scale',
-        question: 'Jeg har følt mig rolig og afslappet',
-        min: 0,
-        max: 5,
-        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
-        required: true
-      },
-      {
-        id: 3,
-        type: 'scale',
-        question: 'Jeg har følt mig aktiv og energisk',
-        min: 0,
-        max: 5,
-        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
-        required: true
-      },
-      {
-        id: 4,
-        type: 'scale',
-        question: 'Jeg vågnede op og følte mig frisk og udhvilet',
-        min: 0,
-        max: 5,
-        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
-        required: true
-      },
-      {
-        id: 5,
-        type: 'scale',
-        question: 'Min dagligdag har været fyldt med ting der interesserer mig',
-        min: 0,
-        max: 5,
-        labels: ['På intet tidspunkt', 'Nogle gange', 'Mindre end halvdelen af tiden', 'Mere end halvdelen af tiden', 'Det meste af tiden', 'Hele tiden'],
-        required: true
-      }
-    ]
-  },
-
-  'treatment-progress': {
+    'treatment-progress': {
     id: 'treatment-progress',
     title: 'Treatment Progress Review',
     description: 'Progress tracking questionnaire for ongoing treatment',
@@ -171,60 +117,6 @@ export const questionnaireTemplates = {
       }
     ]
   },
-
-  'rbmt': {
-    id: 'rbmt',
-    title: 'Rivermead Behavioural Memory Test (RBMT) - Forenkling',
-    description: 'Dette spørgeskema hjælper med at vurdere forskellige aspekter af din hukommelse og kognitive funktioner.',
-    instructions: 'Besvar venligst alle spørgsmål så nøjagtigt som muligt baseret på dine oplevelser i de sidste 4 uger.',
-    questions: [
-      {
-        id: 1,
-        question: 'Hvor ofte glemmer du, hvor du har lagt ting?',
-        type: 'multiple-choice',
-        options: [
-          'Aldrig eller næsten aldrig',
-          'Sjældent',
-          'Nogle gange',
-          'Ofte',
-          'Meget ofte'
-        ],
-        required: true
-      },
-      {
-        id: 2,
-        question: 'Hvor ofte glemmer du navne på personer, du kender godt?',
-        type: 'multiple-choice',
-        options: [
-          'Aldrig eller næsten aldrig',
-          'Sjældent',
-          'Nogle gange',
-          'Ofte',
-          'Meget ofte'
-        ],
-        required: true
-      },
-      {
-        id: 3,
-        question: 'Hvor ofte mister du tråden i en samtale?',
-        type: 'multiple-choice',
-        options: [
-          'Aldrig eller næsten aldrig',
-          'Sjældent',
-          'Nogle gange',
-          'Ofte',
-          'Meget ofte'
-        ],
-        required: true
-      },
-      {
-        id: 4,
-        question: 'Beskriv kort eventuelle specifikke hukommelsesproblemer, du har oplevet:',
-        type: 'textarea',
-        required: false
-      }
-    ]
-  }
 }
 
 export default questionnaireTemplates

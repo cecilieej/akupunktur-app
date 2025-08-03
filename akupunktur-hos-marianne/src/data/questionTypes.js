@@ -1,4 +1,4 @@
-// Simplified question types for Phase 1 deployment
+﻿// Simplified question types for Phase 1 deployment
 export const questionTypes = {
   'scale': {
     label: 'Skala',
@@ -19,23 +19,6 @@ export const questionTypes = {
     label: 'Multi-linje Tekst',
     description: 'Lang tekst område',
     icon: '📄'
-  }
-}tion types for Phase 1 deployment
-export const questionTypes = {
-  'text': {
-    label: 'Text',
-    description: 'Simple text input',
-    icon: '📝'
-  },
-  'textarea': {
-    label: 'Textarea', 
-    description: 'Multi-line text',
-    icon: '📄'
-  },
-  'multiple-choice': {
-    label: 'Multiple Choice',
-    description: 'Select one option',
-    icon: '�'
   }
 }
 
