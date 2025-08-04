@@ -18,13 +18,18 @@ export const patientsService = {
   // Get all patients
   async getAll() {
     try {
-      const querySnapshot = await getDocs(
-        query(collection(db, 'patients'), orderBy('createdAt', 'desc'))
-      )
-      return querySnapshot.docs.map(doc => ({
+      const querySnapshot = await getDocs(collection(db, 'patients'))
+      const patients = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
+      
+      // Sort manually by createdAt if available
+      return patients.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(0)
+        const bTime = b.createdAt?.toDate?.() || new Date(0)
+        return bTime - aTime
+      })
     } catch (error) {
       console.error('Error fetching patients:', error)
       throw error
@@ -95,25 +100,31 @@ export const questionnairesService = {
     try {
       const q = query(
         collection(db, 'questionnaires'), 
-        where('patientId', '==', patientId),
-        orderBy('createdAt', 'desc')
+        where('patientId', '==', patientId)
       )
       const querySnapshot = await getDocs(q)
-      return querySnapshot.docs.map(doc => ({
+      const questionnaires = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
+      
+      // Sort manually by createdAt if available
+      return questionnaires.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(a.assignedDate || 0)
+        const bTime = b.createdAt?.toDate?.() || new Date(b.assignedDate || 0)
+        return bTime - aTime
+      })
     } catch (error) {
       console.error('Error fetching questionnaires:', error)
       throw error
     }
   },
 
-  // Get questionnaire by access token
+  // Get questionnaire by access token - now searches in patient-questionnaires
   async getByToken(token) {
     try {
       const q = query(
-        collection(db, 'questionnaires'), 
+        collection(db, 'patient-questionnaires'), 
         where('accessToken', '==', token)
       )
       const querySnapshot = await getDocs(q)
@@ -128,43 +139,104 @@ export const questionnairesService = {
       console.error('Error fetching questionnaire by token:', error)
       throw error
     }
+  }
+}
+
+// Patient Questionnaire Instances CRUD operations
+export const patientQuestionnairesService = {
+  // Get questionnaires for a patient
+  async getByPatientId(patientId) {
+    try {
+      const q = query(
+        collection(db, 'patient-questionnaires'), 
+        where('patientId', '==', patientId)
+      )
+      const querySnapshot = await getDocs(q)
+      const questionnaires = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      
+      // Sort manually by createdAt if available
+      return questionnaires.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(a.assignedDate || 0)
+        const bTime = b.createdAt?.toDate?.() || new Date(b.assignedDate || 0)
+        return bTime - aTime
+      })
+    } catch (error) {
+      console.error('Error fetching patient questionnaires:', error)
+      throw error
+    }
   },
 
-  // Create questionnaire
+  // Create a patient questionnaire instance
   async create(questionnaireData) {
     try {
-      const docRef = await addDoc(collection(db, 'questionnaires'), {
+      const docRef = await addDoc(collection(db, 'patient-questionnaires'), {
         ...questionnaireData,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        lastModified: serverTimestamp()
       })
       return docRef.id
     } catch (error) {
-      console.error('Error creating questionnaire:', error)
+      console.error('Error creating patient questionnaire:', error)
       throw error
     }
   },
 
-  // Update questionnaire (for responses)
-  async update(id, data) {
+  // Update patient questionnaire (for storing responses)
+  async update(id, updates) {
     try {
-      const docRef = doc(db, 'questionnaires', id)
+      const docRef = doc(db, 'patient-questionnaires', id)
       await updateDoc(docRef, {
-        ...data,
-        updatedAt: serverTimestamp()
+        ...updates,
+        lastModified: serverTimestamp()
       })
     } catch (error) {
-      console.error('Error updating questionnaire:', error)
+      console.error('Error updating patient questionnaire:', error)
       throw error
     }
   },
 
-  // Delete questionnaire
+  // Delete patient questionnaire
   async delete(id) {
     try {
-      await deleteDoc(doc(db, 'questionnaires', id))
+      await deleteDoc(doc(db, 'patient-questionnaires', id))
     } catch (error) {
-      console.error('Error deleting questionnaire:', error)
+      console.error('Error deleting patient questionnaire:', error)
+      throw error
+    }
+  },
+
+  // Get questionnaire by access token
+  async getByToken(token) {
+    try {
+      const q = query(
+        collection(db, 'patient-questionnaires'), 
+        where('accessToken', '==', token)
+      )
+      const querySnapshot = await getDocs(q)
+      
+      if (querySnapshot.empty) {
+        // Also check the old collection in case there are legacy questionnaires
+        const legacyQ = query(
+          collection(db, 'questionnaires'), 
+          where('accessToken', '==', token)
+        )
+        const legacySnapshot = await getDocs(legacyQ)
+        
+        if (!legacySnapshot.empty) {
+          const doc = legacySnapshot.docs[0]
+          return { id: doc.id, ...doc.data() }
+        }
+        
+        throw new Error('Questionnaire not found or token invalid')
+      }
+      
+      const doc = querySnapshot.docs[0]
+      return { id: doc.id, ...doc.data() }
+    } catch (error) {
+      console.error('Error fetching questionnaire by token:', error)
       throw error
     }
   }

@@ -15,6 +15,7 @@ export const migrateQuestionnaireTemplates = async () => {
         questions: template.questions,
         originalTemplateId: key,
         createdBy: 'system-migration',
+        lastModifiedBy: 'system-migration',
         isMigrated: true
       }
       

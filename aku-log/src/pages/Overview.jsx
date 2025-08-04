@@ -1,48 +1,17 @@
 import { useState, useEffect } from 'react'
 import { danishTexts } from '../data/danishTexts'
-import { patientsService } from '../services/firebaseService'
+import { patientsService, questionnairesService, patientQuestionnairesService } from '../services/firebaseService'
 import { questionnaireService } from '../services/questionnaireService'
+import { authService } from '../services/authService'
+import { generateAccessToken } from '../utils/tokenUtils'
 import PatientInfo from '../components/PatientInfo'
 import './Overview.css'
 
 const Overview = () => {
   const t = danishTexts
   
-  // Load patients from Firebase or localStorage as fallback
-  const getInitialPatients = () => {
-    const savedPatients = localStorage.getItem('acupuncture-patients')
-    if (savedPatients) {
-      return JSON.parse(savedPatients)
-    }
-    return [
-      {
-        id: 1,
-        name: 'Anna Hansen',
-        age: 35,
-        phone: '+45 12 34 56 78',
-        email: 'anna.hansen@email.com',
-        condition: 'Rygsmerter',
-        questionnaires: [
-          { id: 1, title: 'Indledende Helbredsvurdering', date: '2024-12-01', status: 'completed' },
-          { id: 2, title: 'Behandlingsforløb Evaluering', date: '2024-12-15', status: 'completed' }
-        ]
-      },
-      {
-        id: 2,
-        name: 'Lars Nielsen',
-        age: 42,
-        phone: '98 76 54 32',
-        email: 'lars.nielsen@email.com',
-        condition: 'Stress og angst',
-        questionnaires: [
-          { id: 3, title: 'Indledende Helbredsvurdering', date: '2025-07-20', status: 'completed' },
-          { id: 4, title: 'WHO-5 Trivselsskala', date: '2025-07-20', status: 'pending' }
-        ]
-      }
-    ]
-  }
-
-  const [patients, setPatients] = useState(getInitialPatients)
+  // Start with empty patients array - load from Firebase
+  const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [availableQuestionnaires, setAvailableQuestionnaires] = useState([])
@@ -55,26 +24,45 @@ const Overview = () => {
 
   const loadQuestionnaires = async () => {
     try {
+      setLoading(true)
+      
+      // Load questionnaires from Firebase
       const questionnaires = await questionnaireService.getAllQuestionnaires()
-      // Format questionnaires for the dropdown
-      const formattedQuestionnaires = questionnaires.map(q => ({
+      const firebaseQuestionnaires = questionnaires.map(q => ({
         id: q.id,
         title: q.title,
-        description: q.description || 'Ingen beskrivelse'
+        description: q.description || 'Ingen beskrivelse',
+        questions: q.questions || [],
+        isTemplate: false,
+        originalTemplateId: q.originalTemplateId
       }))
-      setAvailableQuestionnaires(formattedQuestionnaires)
+      
+      // Remove duplicates based on title and originalTemplateId
+      const uniqueQuestionnaires = firebaseQuestionnaires.filter((q, index, arr) => {
+        // Keep the first occurrence of each unique questionnaire
+        return index === arr.findIndex(item => 
+          item.title === q.title && 
+          item.originalTemplateId === q.originalTemplateId
+        )
+      })
+      
+      // If no questionnaires exist in Firebase, we need to migrate templates first
+      if (uniqueQuestionnaires.length === 0) {
+        console.log('No questionnaires found in Firebase. Templates need to be migrated first.')
+        setError('Ingen spørgeskemaer fundet. Migrer venligst skabeloner fra Admin-panelet først.')
+        setAvailableQuestionnaires([])
+        return
+      }
+      
+      console.log('Loaded questionnaires:', uniqueQuestionnaires)
+      setAvailableQuestionnaires(uniqueQuestionnaires)
+      
     } catch (err) {
-      console.warn('Failed to load questionnaires from database:', err.message)
-      // Fallback to hardcoded questionnaires
-      const fallbackQuestionnaires = [
-        { id: 'who5', title: 'WHO-5 Trivselsskala', description: 'Måler generel trivsel og humør' },
-        { id: 'rbmt', title: 'RBMT Hukommelsestest', description: 'Test af hverdagshukommelse' },
-        { id: 'pain-scale', title: 'Smerteskala', description: 'Vurdering af smerteniveau' },
-        { id: 'initial-health', title: 'Indledende Helbredsvurdering', description: 'Grundlæggende helbredsstatus' },
-        { id: 'treatment-progress', title: 'Behandlingsforløb', description: 'Opfølgning på behandling' },
-        { id: 'lifestyle', title: 'Livsstil Spørgeskema', description: 'Kost, motion og livsstil' }
-      ]
-      setAvailableQuestionnaires(fallbackQuestionnaires)
+      console.error('Failed to load questionnaires from Firebase:', err.message)
+      setError('Fejl ved indlæsning af spørgeskemaer. Tjek forbindelsen til Firebase.')
+      setAvailableQuestionnaires([])
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -82,29 +70,36 @@ const Overview = () => {
     try {
       setLoading(true)
       const firebasePatients = await patientsService.getAll()
-      if (firebasePatients.length > 0) {
-        setPatients(firebasePatients)
-      }
+      
+      // Load questionnaires for each patient
+      const patientsWithQuestionnaires = await Promise.all(
+        firebasePatients.map(async (patient) => {
+          try {
+            const questionnaires = await patientQuestionnairesService.getByPatientId(patient.id)
+            return {
+              ...patient,
+              questionnaires: questionnaires.map(q => ({
+                id: q.id,
+                title: q.title,
+                date: q.assignedDate ? q.assignedDate.split('T')[0] : new Date().toISOString().split('T')[0],
+                status: q.status || 'pending',
+                templateId: q.templateId,
+                accessToken: q.accessToken
+              }))
+            }
+          } catch (error) {
+            console.warn(`Error loading questionnaires for patient ${patient.id}:`, error)
+            return { ...patient, questionnaires: [] }
+          }
+        })
+      )
+      
+      setPatients(patientsWithQuestionnaires)
     } catch (err) {
-      console.warn('Firebase not available, using localStorage:', err.message)
-      // Fallback to localStorage - already loaded in getInitialPatients
+      console.warn('Firebase not available:', err.message)
+      setError('Fejl ved indlæsning af patienter fra Firebase.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  // Save patients to both localStorage and Firebase
-  const savePatients = async (updatedPatients) => {
-    // Always save to localStorage as fallback
-    localStorage.setItem('acupuncture-patients', JSON.stringify(updatedPatients))
-    setPatients(updatedPatients)
-    
-    // Try to save to Firebase
-    try {
-      // Note: This would need more sophisticated sync logic in production
-      console.log('Would sync to Firebase:', updatedPatients)
-    } catch (err) {
-      console.warn('Failed to sync to Firebase:', err.message)
     }
   }
 
@@ -141,96 +136,210 @@ const Overview = () => {
     setSelectedPatient(null)
   }
 
-  const handleAddPatient = (e) => {
+  const handleAddPatient = async (e) => {
     e.preventDefault()
     
-    // Create questionnaires based on selected templates
-    const initialQuestionnaires = newPatient.selectedQuestionnaires.map(qId => {
-      const template = availableQuestionnaires.find(q => q.id === qId)
-      return {
-        id: Math.random().toString(36).substr(2, 9),
-        title: template.title,
-        date: new Date().toISOString().split('T')[0],
-        status: 'pending',
-        templateId: qId
+    try {
+      setLoading(true)
+      
+      // Create patient in Firebase first
+      const patientData = {
+        name: newPatient.name,
+        age: parseInt(newPatient.age),
+        phone: newPatient.phone,
+        email: newPatient.email,
+        condition: newPatient.condition
       }
-    })
-
-    const patient = {
-      id: patients.length + 1,
-      name: newPatient.name,
-      age: parseInt(newPatient.age),
-      phone: newPatient.phone,
-      email: newPatient.email,
-      condition: newPatient.condition,
-      lastVisit: new Date().toISOString().split('T')[0],
-      questionnaires: initialQuestionnaires
-    }
-    
-    setPatients([...patients, patient])
-    savePatients([...patients, patient])
-    setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
-    setShowAddForm(false)
-  }
-
-  const handleUpdatePatient = (e) => {
-    e.preventDefault()
-    
-    const updatedPatients = patients.map(p => 
-      p.id === newPatient.id 
-        ? { 
-            ...newPatient, 
-            age: parseInt(newPatient.age),
-            questionnaires: p.questionnaires // Keep existing questionnaires
+      
+      const patientId = await patientsService.create(patientData)
+      
+      // Create questionnaires for the patient if any were selected
+      const createdQuestionnaires = []
+      if (newPatient.selectedQuestionnaires.length > 0) {
+        const currentUser = await authService.getCurrentUser()
+        
+        for (const templateId of newPatient.selectedQuestionnaires) {
+          const template = availableQuestionnaires.find(q => q.id === templateId)
+          if (template) {
+            const accessToken = generateAccessToken()
+            
+            const questionnaireData = {
+              title: template.title,
+              description: template.description,
+              questions: template.questions,
+              createdBy: currentUser?.email || 'system',
+              lastModifiedBy: currentUser?.email || 'system',
+              accessToken: accessToken,
+              patientId: patientId,
+              templateId: templateId,
+              status: 'pending',
+              assignedDate: new Date().toISOString()
+            }
+            
+            // Create patient questionnaire instance, not template questionnaire
+            await patientQuestionnairesService.create(questionnaireData)
+            
+            createdQuestionnaires.push({
+              title: template.title,
+              status: 'pending',
+              assignedDate: new Date().toISOString().split('T')[0],
+              accessToken: accessToken
+            })
           }
-        : p
-    )
-    
-    savePatients(updatedPatients)
-    setSelectedPatient(updatedPatients.find(p => p.id === newPatient.id))
-    setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
-    setShowEditForm(false)
+        }
+      }
+      
+      // Reload patients from Firebase to get the updated list
+      await loadPatientsFromFirebase()
+      
+      setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
+      setShowAddForm(false)
+      
+    } catch (error) {
+      console.error('Error adding patient:', error)
+      setError('Fejl ved tilføjelse af patient. Prøv igen.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDeletePatient = (patientId) => {
+  const handleUpdatePatient = async (e) => {
+    e.preventDefault()
+    
+    try {
+      setLoading(true)
+      
+      // Update patient in Firebase
+      const patientData = {
+        name: newPatient.name,
+        age: parseInt(newPatient.age),
+        phone: newPatient.phone,
+        email: newPatient.email,
+        condition: newPatient.condition
+      }
+      
+      await patientsService.update(newPatient.id, patientData)
+      
+      // Reload patients from Firebase
+      await loadPatientsFromFirebase()
+      
+      // Update selected patient
+      const updatedPatient = patients.find(p => p.id === newPatient.id)
+      if (updatedPatient) {
+        setSelectedPatient(updatedPatient)
+      }
+      
+      setNewPatient({ name: '', age: '', phone: '', email: '', condition: '', selectedQuestionnaires: [] })
+      setShowEditForm(false)
+      
+    } catch (error) {
+      console.error('Error updating patient:', error)
+      setError('Fejl ved opdatering af patient. Prøv igen.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDeletePatient = async (patientId) => {
     if (window.confirm(t.deleteConfirm)) {
-      const updatedPatients = patients.filter(p => p.id !== patientId)
-      savePatients(updatedPatients)
-      if (selectedPatient && selectedPatient.id === patientId) {
-        setSelectedPatient(null)
+      try {
+        setLoading(true)
+        
+        // Delete patient from Firebase
+        await patientsService.delete(patientId)
+        
+        // Also delete all questionnaires for this patient
+        const patientQuestionnaires = await patientQuestionnairesService.getByPatientId(patientId)
+        await Promise.all(
+          patientQuestionnaires.map(q => patientQuestionnairesService.delete(q.id))
+        )
+        
+        // Reload patients from Firebase
+        await loadPatientsFromFirebase()
+        
+        if (selectedPatient && selectedPatient.id === patientId) {
+          setSelectedPatient(null)
+        }
+      } catch (error) {
+        console.error('Error deleting patient:', error)
+        setError('Fejl ved sletning af patient. Prøv igen.')
+      } finally {
+        setLoading(false)
       }
     }
   }
 
-  const handleAddQuestionnaireToPatient = (patientId, questionnaireId) => {
-    const template = availableQuestionnaires.find(q => q.id === questionnaireId)
-    const newQuestionnaire = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: template.title,
-      date: new Date().toISOString().split('T')[0],
-      status: 'pending',
-      templateId: questionnaireId
+  const handleAddQuestionnaireToPatient = async (patientId, questionnaireId) => {
+    try {
+      setLoading(true)
+      const template = availableQuestionnaires.find(q => q.id === questionnaireId)
+      
+      if (!template || !template.questions || template.questions.length === 0) {
+        throw new Error('Template ikke fundet eller mangler spørgsmål')
+      }
+      
+      const currentUser = await authService.getCurrentUser()
+      const accessToken = generateAccessToken()
+      
+      // Create the actual questionnaire document in Firebase
+      const questionnaireData = {
+        title: template.title,
+        description: template.description,
+        questions: template.questions,
+        createdBy: currentUser?.email || 'system',
+        lastModifiedBy: currentUser?.email || 'system',
+        accessToken: accessToken,
+        patientId: patientId,
+        templateId: questionnaireId,
+        status: 'pending',
+        assignedDate: new Date().toISOString()
+      }
+      
+      await patientQuestionnairesService.create(questionnaireData)
+      
+      // Reload patients to get updated questionnaire list
+      await loadPatientsFromFirebase()
+      
+      // Update selected patient if it's the one we added the questionnaire to
+      if (selectedPatient && selectedPatient.id === patientId) {
+        const updatedPatient = patients.find(p => p.id === patientId)
+        if (updatedPatient) {
+          setSelectedPatient(updatedPatient)
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error adding questionnaire to patient:', error)
+      setError('Fejl ved tilføjelse af spørgeskema. Prøv igen.')
+    } finally {
+      setLoading(false)
     }
-
-    const updatedPatients = patients.map(p => 
-      p.id === patientId 
-        ? { ...p, questionnaires: [...(p.questionnaires || []), newQuestionnaire] }
-        : p
-    )
-    
-    savePatients(updatedPatients)
-    setSelectedPatient(updatedPatients.find(p => p.id === patientId))
   }
 
-  const handleDeleteQuestionnaireFromPatient = (patientId, questionnaireId) => {
-    const updatedPatients = patients.map(p => 
-      p.id === patientId 
-        ? { ...p, questionnaires: p.questionnaires.filter(q => q.id !== questionnaireId) }
-        : p
-    )
-    
-    savePatients(updatedPatients)
-    setSelectedPatient(updatedPatients.find(p => p.id === patientId))
+  const handleDeleteQuestionnaireFromPatient = async (patientId, questionnaireId) => {
+    try {
+      setLoading(true)
+      
+      // Delete the questionnaire document from Firebase
+      await patientQuestionnairesService.delete(questionnaireId)
+      
+      // Reload patients to get updated questionnaire list
+      await loadPatientsFromFirebase()
+      
+      // Update selected patient if it's the one we deleted the questionnaire from
+      if (selectedPatient && selectedPatient.id === patientId) {
+        const updatedPatient = patients.find(p => p.id === patientId)
+        if (updatedPatient) {
+          setSelectedPatient(updatedPatient)
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error deleting questionnaire:', error)
+      setError('Fejl ved sletning af spørgeskema. Prøv igen.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (e) => {
@@ -264,11 +373,53 @@ const Overview = () => {
             setShowAddForm(true)
             setSelectedPatient(null)
             setShowEditForm(false)
+            setError('') // Clear any previous errors
           }}
         >
           {t.addNewPatient}
         </button>
       </div>
+
+      {/* Error display */}
+      {error && (
+        <div className="error-message" style={{ 
+          background: '#fee', 
+          border: '1px solid #f99', 
+          padding: '10px', 
+          margin: '10px 0', 
+          borderRadius: '4px',
+          color: '#c33'
+        }}>
+          {error}
+          <button 
+            onClick={() => setError('')}
+            style={{ 
+              float: 'right', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer',
+              color: '#c33',
+              fontSize: '16px'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Loading display */}
+      {loading && (
+        <div className="loading-message" style={{ 
+          background: '#e3f2fd', 
+          border: '1px solid #2196f3', 
+          padding: '10px', 
+          margin: '10px 0', 
+          borderRadius: '4px',
+          color: '#1976d2'
+        }}>
+          Behandler anmodning...
+        </div>
+      )}
 
       <div className="overview-content">
         <div className="patients-list">

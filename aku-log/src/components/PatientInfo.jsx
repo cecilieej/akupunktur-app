@@ -56,10 +56,13 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
   }
 
   const handleCopyLink = async (questionnaire) => {
-    // For now, this will generate a mock link until Firebase is connected
-    // In real implementation, this would create the questionnaire in Firebase first
-    const mockToken = Math.random().toString(36).substr(2, 32)
-    const link = `${window.location.origin}/questionnaire/${patient.id}/${questionnaire.templateId}/${mockToken}`
+    // Use the actual access token from the questionnaire
+    if (!questionnaire.accessToken) {
+      alert('Fejl: Ingen adgangstoken fundet for dette spørgeskema.')
+      return
+    }
+    
+    const link = `${window.location.origin}/questionnaire/${patient.id}/${questionnaire.id}/${questionnaire.accessToken}`
     
     try {
       await navigator.clipboard.writeText(link)

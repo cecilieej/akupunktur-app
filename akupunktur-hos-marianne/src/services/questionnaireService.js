@@ -62,8 +62,8 @@ export const questionnaireService = {
         title: questionnaire.title,
         description: questionnaire.description,
         questions: questionnaire.questions,
-        createdBy: questionnaire.createdBy || 'system',
-        lastModifiedBy: questionnaire.lastModifiedBy || questionnaire.createdBy || 'system',
+        createdBy: questionnaire.createdBy,
+        lastModifiedBy: questionnaire.lastModifiedBy,
         createdAt: serverTimestamp(),
         lastModified: serverTimestamp(),
         ...questionnaire  // Include any additional fields

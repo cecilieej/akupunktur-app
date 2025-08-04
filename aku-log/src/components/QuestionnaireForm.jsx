@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { questionnairesService } from '../services/firebaseService'
+import { patientQuestionnairesService } from '../services/firebaseService'
 import { validateQuestionnaireAccess } from '../utils/tokenUtils'
 import { questionnaireQuestions } from '../data/questionnaireQuestions'
 import './QuestionnaireForm.css'
@@ -24,7 +24,7 @@ const QuestionnaireForm = () => {
   const loadQuestionnaire = async () => {
     try {
       setLoading(true)
-      const data = await questionnairesService.getByToken(token)
+      const data = await patientQuestionnairesService.getByToken(token)
       
       // Validate access
       validateQuestionnaireAccess(data)
@@ -63,7 +63,7 @@ const QuestionnaireForm = () => {
       setSubmitting(true)
       
       // Update questionnaire with responses
-      await questionnairesService.update(questionnaire.id, {
+      await patientQuestionnairesService.update(questionnaire.id, {
         responses,
         status: 'completed',
         dateCompleted: new Date().toISOString()

@@ -60,7 +60,7 @@ export const questionnaireTemplates = {
     instructions: 'This information helps us understand factors that may affect your treatment.',
     questions: [
       {
-        id: 1,
+        id: 5,
         type: 'multiple-choice',
         question: 'How would you describe your current stress level?',
         options: [
@@ -73,7 +73,7 @@ export const questionnaireTemplates = {
         required: true
       },
       {
-        id: 2,
+        id: 6,
         type: 'multiple-choice',
         question: 'How many hours of sleep do you typically get per night?',
         options: [
@@ -87,7 +87,7 @@ export const questionnaireTemplates = {
         required: true
       },
       {
-        id: 3,
+        id: 7,
         type: 'checkbox',
         question: 'What types of exercise do you regularly do? (Select all that apply)',
         options: [
@@ -103,7 +103,7 @@ export const questionnaireTemplates = {
         required: false
       },
       {
-        id: 4,
+        id: 8,
         type: 'multiple-choice',
         question: 'How would you describe your diet?',
         options: [
