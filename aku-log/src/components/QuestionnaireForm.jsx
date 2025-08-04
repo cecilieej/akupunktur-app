@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { patientQuestionnairesService } from '../services/firebaseService'
 import { validateQuestionnaireAccess } from '../utils/tokenUtils'
-import { questionnaireQuestions } from '../data/questionnaireQuestions'
 import './QuestionnaireForm.css'
 
 const QuestionnaireForm = () => {
@@ -14,8 +13,6 @@ const QuestionnaireForm = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-
-  const questionData = questionnaireQuestions[questionnaireId]
 
   useEffect(() => {
     loadQuestionnaire()
@@ -48,10 +45,10 @@ const QuestionnaireForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!questionnaire || !questionData) return
+    if (!questionnaire) return
     
     // Validate required fields
-    const requiredQuestions = questionData.questions.filter(q => q.required)
+    const requiredQuestions = questionnaire.questions.filter(q => q.required)
     const missingAnswers = requiredQuestions.filter(q => !responses[q.id])
     
     if (missingAnswers.length > 0) {
@@ -86,17 +83,24 @@ const QuestionnaireForm = () => {
         return (
           <div className="scale-question">
             <div className="scale-options">
-              {Object.entries(questionData.scale).map(([scaleValue, scaleLabel]) => (
+              {[0, 1, 2, 3, 4, 5].map((scaleValue) => (
                 <label key={scaleValue} className="scale-option">
                   <input
                     type="radio"
                     name={question.id}
-                    value={scaleValue}
-                    checked={value === scaleValue}
+                    value={scaleValue.toString()}
+                    checked={value === scaleValue.toString()}
                     onChange={(e) => handleResponseChange(question.id, e.target.value)}
                   />
                   <div className="scale-value">{scaleValue}</div>
-                  <div className="scale-label">{scaleLabel}</div>
+                  <div className="scale-label">
+                    {scaleValue === 0 ? 'På intet tidspunkt' :
+                     scaleValue === 1 ? 'En lille del af tiden' :
+                     scaleValue === 2 ? 'Lidt under halvdelen af tiden' :
+                     scaleValue === 3 ? 'Lidt over halvdelen af tiden' :
+                     scaleValue === 4 ? 'Det meste af tiden' :
+                     'Hele tiden'}
+                  </div>
                 </label>
               ))}
             </div>
@@ -168,7 +172,7 @@ const QuestionnaireForm = () => {
     )
   }
 
-  if (!questionData) {
+  if (!questionnaire) {
     return (
       <div className="questionnaire-container">
         <div className="error-message">
@@ -182,17 +186,17 @@ const QuestionnaireForm = () => {
   return (
     <div className="questionnaire-container">
       <div className="questionnaire-header">
-        <h1>{questionData.title}</h1>
-        <p className="description">{questionData.description}</p>
-        {questionData.instructions && (
+        <h1>{questionnaire.title}</h1>
+        <p className="description">{questionnaire.description}</p>
+        {questionnaire.instructions && questionnaire.instructions.trim() && (
           <div className="instructions">
-            <strong>Instruktioner:</strong> {questionData.instructions}
+            <strong>Instruktioner:</strong> {questionnaire.instructions}
           </div>
         )}
       </div>
 
       <form onSubmit={handleSubmit} className="questionnaire-form">
-        {questionData.questions.map((question, index) => (
+        {questionnaire.questions.map((question, index) => (
           <div key={question.id} className="question-block">
             <div className="question-header">
               <span className="question-number">{index + 1}.</span>

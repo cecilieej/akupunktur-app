@@ -23,6 +23,7 @@ const QuestionnaireEditor = () => {
   const [questionnaire, setQuestionnaire] = useState({
     title: '',
     description: '',
+    instructions: '',
     questions: []
   })
   const [loading, setLoading] = useState(false)
@@ -80,6 +81,7 @@ const QuestionnaireEditor = () => {
       const questionnaireData = {
         title: questionnaire.title.trim(),
         description: questionnaire.description.trim(),
+        instructions: questionnaire.instructions.trim() || '',
         questions: questionnaire.questions,
         lastModifiedBy: authService.getCurrentUser()?.email
       }
@@ -203,7 +205,21 @@ const QuestionnaireEditor = () => {
                 ...questionnaire,
                 description: e.target.value
               })}
-              placeholder="Indtast beskrivelse eller instruktioner"
+              placeholder="Kort beskrivelse af spørgeskemaet"
+              rows={2}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="instructions">Instruktioner</label>
+            <textarea
+              id="instructions"
+              value={questionnaire.instructions}
+              onChange={(e) => setQuestionnaire({
+                ...questionnaire,
+                instructions: e.target.value
+              })}
+              placeholder="Detaljerede instruktioner til patienten (valgfrit)"
               rows={3}
             />
           </div>

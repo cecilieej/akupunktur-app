@@ -22,6 +22,16 @@ const Overview = () => {
     loadQuestionnaires()
   }, [])
 
+  // Update selected patient when patients array changes (for real-time updates)
+  useEffect(() => {
+    if (selectedPatient && patients.length > 0) {
+      const updatedSelectedPatient = patients.find(p => p.id === selectedPatient.id)
+      if (updatedSelectedPatient) {
+        setSelectedPatient(updatedSelectedPatient)
+      }
+    }
+  }, [patients])
+
   const loadQuestionnaires = async () => {
     try {
       setLoading(true)
@@ -32,6 +42,7 @@ const Overview = () => {
         id: q.id,
         title: q.title,
         description: q.description || 'Ingen beskrivelse',
+        instructions: q.instructions || '',
         questions: q.questions || [],
         isTemplate: false,
         originalTemplateId: q.originalTemplateId
@@ -166,6 +177,7 @@ const Overview = () => {
             const questionnaireData = {
               title: template.title,
               description: template.description,
+              instructions: template.instructions || '',
               questions: template.questions,
               createdBy: currentUser?.email || 'system',
               lastModifiedBy: currentUser?.email || 'system',
@@ -285,6 +297,7 @@ const Overview = () => {
       const questionnaireData = {
         title: template.title,
         description: template.description,
+        instructions: template.instructions || '',
         questions: template.questions,
         createdBy: currentUser?.email || 'system',
         lastModifiedBy: currentUser?.email || 'system',
@@ -299,14 +312,6 @@ const Overview = () => {
       
       // Reload patients to get updated questionnaire list
       await loadPatientsFromFirebase()
-      
-      // Update selected patient if it's the one we added the questionnaire to
-      if (selectedPatient && selectedPatient.id === patientId) {
-        const updatedPatient = patients.find(p => p.id === patientId)
-        if (updatedPatient) {
-          setSelectedPatient(updatedPatient)
-        }
-      }
       
     } catch (error) {
       console.error('Error adding questionnaire to patient:', error)
@@ -325,14 +330,6 @@ const Overview = () => {
       
       // Reload patients to get updated questionnaire list
       await loadPatientsFromFirebase()
-      
-      // Update selected patient if it's the one we deleted the questionnaire from
-      if (selectedPatient && selectedPatient.id === patientId) {
-        const updatedPatient = patients.find(p => p.id === patientId)
-        if (updatedPatient) {
-          setSelectedPatient(updatedPatient)
-        }
-      }
       
     } catch (error) {
       console.error('Error deleting questionnaire:', error)
