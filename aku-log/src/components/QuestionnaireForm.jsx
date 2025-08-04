@@ -108,6 +108,17 @@ const QuestionnaireForm = () => {
         )
       
       case 'multiple_choice':
+      case 'multiple-choice':
+        if (!question.options || !Array.isArray(question.options) || question.options.length === 0) {
+          console.error('Missing or invalid options for question:', question.id, question)
+          return (
+            <div className="error-message" style={{ color: 'red', padding: '1rem', border: '1px solid red', borderRadius: '4px' }}>
+              <strong>Fejl:</strong> Ingen valgmuligheder fundet for dette spørgsmål.
+              <br />
+              <small>Spørgsmål ID: {question.id}</small>
+            </div>
+          )
+        }
         return (
           <div className="multiple-choice-question">
             {question.options.map((option, index) => (
@@ -146,6 +157,31 @@ const QuestionnaireForm = () => {
             className="text-area"
             placeholder="Skriv dit svar her..."
           />
+        )
+      
+      case 'checkbox':
+        return (
+          <div className="checkbox-question">
+            {question.options.map((option, index) => (
+              <label key={index} className="checkbox-option">
+                <input
+                  type="checkbox"
+                  name={question.id}
+                  value={option}
+                  checked={Array.isArray(value) ? value.includes(option) : false}
+                  onChange={(e) => {
+                    const currentValues = Array.isArray(value) ? value : []
+                    if (e.target.checked) {
+                      handleResponseChange(question.id, [...currentValues, option])
+                    } else {
+                      handleResponseChange(question.id, currentValues.filter(v => v !== option))
+                    }
+                  }}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
         )
       
       default:
