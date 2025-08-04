@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+
 .navigation {
   background: #A7BF97;
   color: white;
@@ -8,8 +10,9 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.nav-brand h2 {
+.nav-brand .app-title {
   margin: 0;
+  font-family: 'DM Serif Display', serif;
   font-size: 1.5rem;
   font-weight: 600;
 }

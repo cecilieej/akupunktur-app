@@ -1,7 +1,7 @@
 // Simplified Danish text system - single source of truth
 export const danishTexts = {
   // Navigation
-  patientOverview: 'Patientoversigt',
+  patientOverview: 'Overblik',
   logout: 'Log ud',
   
   // Login page

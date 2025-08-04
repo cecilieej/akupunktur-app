@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+
 .overview-container {
   padding: 2rem;
   max-width: 1400px;
@@ -14,6 +16,8 @@
 .overview-header h1 {
   color: #333;
   margin: 0;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
 }
 
 .add-patient-btn {

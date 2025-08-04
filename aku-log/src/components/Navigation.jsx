@@ -34,7 +34,7 @@ const Navigation = () => {
   return (
     <nav className="navigation">
       <div className="nav-brand">
-        <h2>Akupunktur hos Marianne</h2>
+        <h2 className="app-title">Aku-Log</h2>
       </div>
       <div className="nav-links">
         {currentUser?.role === 'admin' && (
