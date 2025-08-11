@@ -134,7 +134,24 @@
 }
 
 .scale-option input[type="radio"] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.scale-option input[type="radio"]:before,
+.scale-option input[type="radio"]:after {
+  display: none !important;
+  content: none !important;
 }
 
 .scale-option:has(input:checked) {

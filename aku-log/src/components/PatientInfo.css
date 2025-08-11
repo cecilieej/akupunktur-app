@@ -324,6 +324,66 @@
   background: #218838;
 }
 
+.notes-display {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  min-height: 100px;
+}
+
+.notes-content {
+  white-space: pre-wrap;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.notes-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.edit-notes-btn,
+.delete-notes-btn,
+.cancel-notes-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.edit-notes-btn {
+  background: #007bff;
+  color: white;
+}
+
+.edit-notes-btn:hover {
+  background: #0056b3;
+}
+
+.delete-notes-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.delete-notes-btn:hover {
+  background: #c82333;
+}
+
+.cancel-notes-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-notes-btn:hover {
+  background: #545b62;
+}
+
 /* Enhanced responsive design for PatientInfo */
 @media (max-width: 768px) {
   .patient-title-row {

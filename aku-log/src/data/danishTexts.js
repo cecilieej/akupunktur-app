@@ -105,6 +105,18 @@ export const danishTexts = {
   expiry: 'Udløber',
   expired: 'Udløbet',
   
+  // Results viewer
+  viewResults: 'Se Resultater',
+  completedOn: 'Gennemført',
+  assignedOn: 'Tildelt',
+  editDate: 'Rediger dato',
+  saveDate: 'Gem',
+  cancelEdit: 'Annuller',
+  closeResults: 'Luk',
+  noAnswer: 'Ingen svar',
+  edit: 'Rediger',
+  delete: 'Slet',
+  
   // Firebase/Database
   loadingData: 'Indlæser data...',
   savingData: 'Gemmer data...',

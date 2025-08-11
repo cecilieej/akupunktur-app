@@ -92,10 +92,13 @@ const Overview = () => {
               questionnaires: questionnaires.map(q => ({
                 id: q.id,
                 title: q.title,
-                date: q.assignedDate ? q.assignedDate.split('T')[0] : new Date().toISOString().split('T')[0],
-                status: q.status || 'pending',
+                assignedDate: q.assignedDate,
+                dateCompleted: q.dateCompleted,
+                status: q.dateCompleted ? 'completed' : 'pending',
                 templateId: q.templateId,
-                accessToken: q.accessToken
+                accessToken: q.accessToken,
+                questions: q.questions,
+                responses: q.responses
               }))
             }
           } catch (error) {
@@ -554,6 +557,7 @@ const Overview = () => {
               onDelete={() => handleDeletePatient(selectedPatient.id)}
               onAddQuestionnaire={handleAddQuestionnaireToPatient}
               onDeleteQuestionnaire={handleDeleteQuestionnaireFromPatient}
+              onUpdatePatient={loadPatientsFromFirebase}
               availableQuestionnaires={availableQuestionnaires}
             />
           ) : (
