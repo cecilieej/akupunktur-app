@@ -221,6 +221,40 @@
   box-shadow: 0 5px 15px rgba(139, 157, 195, 0.3);
 }
 
+/* Questionnaire Actions Row */
+.questionnaire-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Export to Excel Button */
+.export-excel-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.export-excel-btn:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.export-excel-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .add-questionnaire-form {
   margin-top: 1rem;
   padding: 1rem;
@@ -469,6 +503,17 @@
   }
   
   .add-questionnaire-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .questionnaire-actions-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .export-excel-btn {
+    width: 100%;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
   }

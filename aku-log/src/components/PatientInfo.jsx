@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as XLSX from 'xlsx'
 import { danishTexts } from '../data/danishTexts'
 import { patientQuestionnairesService, patientsService } from '../services/firebaseService'
 import QuestionnaireGroup from './QuestionnaireGroup'
@@ -109,6 +110,97 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
   const handleCancelNotes = () => {
     setTempNotes('')
     setIsEditingNotes(!treatmentNotes) // Only stay in edit mode if no notes exist
+  }
+
+  const handleExportToExcel = () => {
+    try {
+      // Filter completed questionnaires
+      const completedQuestionnaires = patient.questionnaires?.filter(q => q.status === 'completed') || []
+      
+      if (completedQuestionnaires.length === 0) {
+        alert('Ingen færdige spørgeskemaer at eksportere')
+        return
+      }
+
+      // Create workbook
+      const wb = XLSX.utils.book_new()
+      
+      // Create patient info sheet
+      const patientInfo = [
+        ['Patient Information'],
+        ['Navn', patient.name],
+        ['Alder', patient.age],
+        ['Telefon', patient.phone],
+        ['Email', patient.email],
+        ['Tilstand', patient.condition],
+        ['Behandlingsnotater', treatmentNotes || 'Ingen notater'],
+        [''],
+        ['Spørgeskema Overblik'],
+        ['Titel', 'Gennemført Dato', 'Status']
+      ]
+      
+      // Add questionnaire overview
+      completedQuestionnaires.forEach(q => {
+        const completedDate = q.dateCompleted ? new Date(q.dateCompleted).toLocaleDateString('da-DK') : 'Ikke angivet'
+        patientInfo.push([q.title, completedDate, 'Gennemført'])
+      })
+      
+      const patientWs = XLSX.utils.aoa_to_sheet(patientInfo)
+      XLSX.utils.book_append_sheet(wb, patientWs, 'Patient Info')
+      
+      // Create individual sheets for each completed questionnaire
+      completedQuestionnaires.forEach((questionnaire, index) => {
+        if (!questionnaire.questions || !questionnaire.responses) return
+        
+        const sheetData = [
+          [questionnaire.title],
+          ['Gennemført:', questionnaire.dateCompleted ? new Date(questionnaire.dateCompleted).toLocaleDateString('da-DK') : 'Ikke angivet'],
+          [''],
+          ['Spørgsmål', 'Svar']
+        ]
+        
+        questionnaire.questions.forEach((question, qIndex) => {
+          const answer = questionnaire.responses[question.id]
+          let formattedAnswer = answer || 'Intet svar'
+          
+          // Format answers based on question type
+          if (question.type === 'scale' && answer !== undefined) {
+            const scaleLabels = {
+              '0': 'På intet tidspunkt',
+              '1': 'En lille del af tiden', 
+              '2': 'Lidt under halvdelen af tiden',
+              '3': 'Lidt over halvdelen af tiden',
+              '4': 'Det meste af tiden',
+              '5': 'Hele tiden'
+            }
+            formattedAnswer = `${answer}/5 - ${scaleLabels[answer] || answer}`
+          } else if (Array.isArray(answer)) {
+            formattedAnswer = answer.join(', ')
+          }
+          
+          sheetData.push([
+            `${qIndex + 1}. ${question.question}`,
+            formattedAnswer
+          ])
+        })
+        
+        const ws = XLSX.utils.aoa_to_sheet(sheetData)
+        // Create safe sheet name (Excel has 31 char limit)
+        const sheetName = questionnaire.title.substring(0, 25) + (index > 0 ? ` (${index + 1})` : '')
+        XLSX.utils.book_append_sheet(wb, ws, sheetName)
+      })
+      
+      // Generate filename with current date
+      const today = new Date().toISOString().split('T')[0]
+      const filename = `${patient.name}_sporgeskemaer_${today}.xlsx`
+      
+      // Download file
+      XLSX.writeFile(wb, filename)
+      
+    } catch (error) {
+      console.error('Error exporting to Excel:', error)
+      alert('Fejl ved eksport til Excel')
+    }
   }
   
   const getStatusColor = (status) => {
@@ -221,12 +313,21 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
         )}
         
         {!showAddQuestionnaire ? (
-          <button 
-            className="add-questionnaire-btn"
-            onClick={() => setShowAddQuestionnaire(true)}
-          >
-            {t.createNewQuestionnaire}
-          </button>
+          <div className="questionnaire-actions-row">
+            <button 
+              className="add-questionnaire-btn"
+              onClick={() => setShowAddQuestionnaire(true)}
+            >
+              {t.createNewQuestionnaire}
+            </button>
+            <button 
+              className="export-excel-btn"
+              onClick={handleExportToExcel}
+              disabled={!patient.questionnaires?.some(q => q.status === 'completed')}
+            >
+              {t.exportToExcel}
+            </button>
+          </div>
         ) : (
           <div className="add-questionnaire-form">
             <h4>{t.selectQuestionnaire}</h4>

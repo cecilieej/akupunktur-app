@@ -116,6 +116,7 @@ export const danishTexts = {
   noAnswer: 'Ingen svar',
   edit: 'Rediger',
   delete: 'Slet',
+  exportToExcel: 'Eksporter til Excel',
   
   // Firebase/Database
   loadingData: 'Indlæser data...',
