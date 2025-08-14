@@ -38,41 +38,57 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-card">
-        <h1>{t.employeeLogin}</h1>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={credentials.email}
-              onChange={handleChange}
-              placeholder="eks. demo@akupunktur.dk"
-              required
-            />
+      <div className="login-content">
+        {/* Welcome Box */}
+        <div className="welcome-box">
+          <div className="logo-container">
+            <img src="/acupuncture-icon.svg" alt="AkuLog" className="logo" />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">{t.password}</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={credentials.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {error && (
-            <div className="error-message">
-              {error}
+          <h2 className="welcome-heading">
+            Velkommen til Akupunktur Logbog
+          </h2>
+          <p className="welcome-text">
+            Dit digitale værktøj til at holde styr på behandlinger og resultater.
+          </p>
+        </div>
+
+        {/* Login Box */}
+        <div className="login-card">
+          <h1>{t.employeeLogin}</h1>
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={credentials.email}
+                onChange={handleChange}
+                placeholder="eks. demo@akupunktur.dk"
+                required
+              />
             </div>
-          )}
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Logger ind...' : t.login}
-          </button>
-        </form>
+            <div className="form-group">
+              <label htmlFor="password">{t.password}</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={credentials.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+            <button type="submit" className="login-button" disabled={loading}>
+              {loading ? 'Logger ind...' : t.login}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
