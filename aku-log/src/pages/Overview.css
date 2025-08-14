@@ -43,9 +43,64 @@
   gap: 2rem;
 }
 
-.patients-list h2 {
-  color: #333;
+/* Patients header with search */
+.patients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1rem;
+}
+
+.patients-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.search-toggle-btn {
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+}
+
+.search-toggle-btn:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+.search-field {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #A7BF97;
+  box-shadow: 0 0 0 2px rgba(167, 191, 151, 0.2);
+}
+
+.no-patients-message {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem 1rem;
 }
 
 .patients-list {
@@ -53,7 +108,6 @@
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
   max-width: 350px;
 }
 
@@ -61,10 +115,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  height: calc(100vh - 250px);
-  min-height: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
 }
 
 .patient-card {
@@ -322,12 +372,6 @@
   .patients-list {
     max-width: 320px;
   }
-  
-  .patient-cards {
-    height: calc(100vh - 280px);
-    min-height: 350px;
-    max-height: 75vh;
-  }
 }
 
 @media (max-width: 768px) {
@@ -350,10 +394,19 @@
     max-width: none;
   }
   
-  .patient-cards {
-    height: 300px;
-    min-height: 250px;
-    max-height: 350px;
+  .patients-header {
+    margin-bottom: 0.75rem;
+  }
+  
+  .search-toggle-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+  
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.5rem;
   }
   
   .patient-card {

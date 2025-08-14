@@ -11,9 +11,9 @@ import { auth } from '../config/firebase'
 // Define user roles - you can store these in Firestore for more complex role management
 const USER_ROLES = {
   'admin@akupunktur.dk': { role: 'admin', name: 'Administrator' },
-  'medarbejder1@akupunktur.dk': { role: 'user', name: 'Medarbejder 1' },
-  'medarbejder2@akupunktur.dk': { role: 'user', name: 'Medarbejder 2' },
-  'medarbejder3@akupunktur.dk': { role: 'user', name: 'Medarbejder 3' }
+  'medarbejder1@akupunktur.dk': { role: 'employee', name: 'Demo Medarbejder', employeeId: 'medarbejder1' },
+  'marianne@akupunktur.dk': { role: 'employee', name: 'Marianne', employeeId: 'marianne' },
+  'karin@akupunktur.dk': { role: 'employee', name: 'Karin', employeeId: 'karin' }
 }
 
 export const authService = {
@@ -24,13 +24,14 @@ export const authService = {
       const user = userCredential.user
       
       // Get user role from predefined roles or default to 'user'
-      const userRole = USER_ROLES[email] || { role: 'user', name: user.displayName || 'User' }
+      const userRole = USER_ROLES[email] || { role: 'employee', name: user.displayName || 'User', employeeId: 'unknown' }
       
       const authData = {
         uid: user.uid,
         email: user.email,
         role: userRole.role,
         name: userRole.name,
+        employeeId: userRole.employeeId,
         loginTime: new Date().toISOString()
       }
       
@@ -85,13 +86,14 @@ export const authService = {
     const user = auth.currentUser
     if (!user) return null
     
-    const userRole = USER_ROLES[user.email] || { role: 'user', name: user.displayName || 'User' }
+    const userRole = USER_ROLES[user.email] || { role: 'employee', name: user.displayName || 'User', employeeId: 'unknown' }
     
     return {
       uid: user.uid,
       email: user.email,
       role: userRole.role,
-      name: userRole.name
+      name: userRole.name,
+      employeeId: userRole.employeeId
     }
   },
 

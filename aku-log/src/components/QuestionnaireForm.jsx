@@ -93,14 +93,6 @@ const QuestionnaireForm = () => {
                     onChange={(e) => handleResponseChange(question.id, e.target.value)}
                   />
                   <div className="scale-value">{scaleValue}</div>
-                  <div className="scale-label">
-                    {scaleValue === 0 ? 'På intet tidspunkt' :
-                     scaleValue === 1 ? 'En lille del af tiden' :
-                     scaleValue === 2 ? 'Lidt under halvdelen af tiden' :
-                     scaleValue === 3 ? 'Lidt over halvdelen af tiden' :
-                     scaleValue === 4 ? 'Det meste af tiden' :
-                     'Hele tiden'}
-                  </div>
                 </label>
               ))}
             </div>

@@ -15,12 +15,26 @@ const Overview = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [availableQuestionnaires, setAvailableQuestionnaires] = useState([])
+  const [showSearch, setShowSearch] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentUser, setCurrentUser] = useState(null)
 
   // Load patients from Firebase on component mount
   useEffect(() => {
+    // Get current user first
+    const user = authService.getCurrentUser()
+    setCurrentUser(user)
+    
     loadPatientsFromFirebase()
     loadQuestionnaires()
   }, [])
+
+  // Reload patients when user changes
+  useEffect(() => {
+    if (currentUser) {
+      loadPatientsFromFirebase()
+    }
+  }, [currentUser])
 
   // Update selected patient when patients array changes (for real-time updates)
   useEffect(() => {
@@ -108,7 +122,23 @@ const Overview = () => {
         })
       )
       
-      setPatients(patientsWithQuestionnaires)
+      // Filter patients based on user role
+      const user = currentUser || authService.getCurrentUser()
+      let filteredPatients = patientsWithQuestionnaires
+      
+      console.log('Current user:', user)
+      console.log('All patients before filtering:', patientsWithQuestionnaires.map(p => ({ id: p.id, name: p.name, assignedTo: p.assignedTo })))
+      
+      if (user && user.role === 'employee') {
+        // Employees can only see their own patients
+        filteredPatients = patientsWithQuestionnaires.filter(patient => 
+          patient.assignedTo === user.employeeId
+        )
+        console.log('Filtered patients for employee:', filteredPatients.map(p => ({ id: p.id, name: p.name, assignedTo: p.assignedTo })))
+      }
+      // Admin users see all patients (no filtering needed)
+      
+      setPatients(filteredPatients)
     } catch (err) {
       console.warn('Firebase not available:', err.message)
       setError('Fejl ved indlæsning af patienter fra Firebase.')
@@ -156,6 +186,9 @@ const Overview = () => {
     try {
       setLoading(true)
       
+      // Get current user to assign patient
+      const user = currentUser || authService.getCurrentUser()
+      
       // Create patient in Firebase first
       const patientData = {
         name: newPatient.name,
@@ -163,6 +196,15 @@ const Overview = () => {
         phone: newPatient.phone,
         email: newPatient.email,
         condition: newPatient.condition
+      }
+      
+      // Set assignedTo field properly
+      if (user.role === 'admin') {
+        // Admin can assign to specific employee or default to admin
+        patientData.assignedTo = newPatient.assignedTo || 'admin'
+      } else {
+        // Employee assigns to themselves
+        patientData.assignedTo = user.employeeId || user.email.split('@')[0]
       }
       
       const patientId = await patientsService.create(patientData)
@@ -231,6 +273,11 @@ const Overview = () => {
         phone: newPatient.phone,
         email: newPatient.email,
         condition: newPatient.condition
+      }
+      
+      // Only admin can change assignedTo field
+      if (currentUser?.role === 'admin' && newPatient.assignedTo) {
+        patientData.assignedTo = newPatient.assignedTo
       }
       
       await patientsService.update(newPatient.id, patientData)
@@ -363,6 +410,28 @@ const Overview = () => {
     }
   }
 
+  // Helper function to get latest questionnaire status
+  const getLatestQuestionnaireStatus = (patient) => {
+    if (!patient.questionnaires || patient.questionnaires.length === 0) {
+      return 'Ingen spørgeskemaer'
+    }
+    
+    // Sort by date (most recent first)
+    const sorted = [...patient.questionnaires].sort((a, b) => {
+      const dateA = new Date(a.dateCompleted || a.assignedDate || 0)
+      const dateB = new Date(b.dateCompleted || b.assignedDate || 0)
+      return dateB - dateA
+    })
+    
+    const latest = sorted[0]
+    return latest.status === 'completed' ? 'Gennemført' : 'Afventer'
+  }
+
+  // Filter patients based on search term
+  const filteredPatients = patients.filter(patient =>
+    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div className="overview-container">
       <div className="overview-header">
@@ -423,20 +492,47 @@ const Overview = () => {
 
       <div className="overview-content">
         <div className="patients-list">
-          <h2>{t.patients}</h2>
+          <div className="patients-header">
+            <h2>{t.patients}</h2>
+            <button 
+              className="search-toggle-btn"
+              onClick={() => setShowSearch(!showSearch)}
+              title="Søg patienter"
+            >
+              🔍
+            </button>
+          </div>
+          
+          {showSearch && (
+            <div className="search-field">
+              <input
+                type="text"
+                placeholder="Søg efter patient navn..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+          )}
+          
           <div className="patient-cards">
-            {patients.map(patient => (
-              <div 
-                key={patient.id} 
-                className={`patient-card ${selectedPatient?.id === patient.id ? 'selected' : ''}`}
-                onClick={() => handleSelectPatient(patient)}
-              >
-                <h3>{patient.name}</h3>
-                <p><strong>{t.ageLabel}:</strong> {patient.age}</p>
-                <p><strong>{t.conditionLabel}:</strong> {patient.condition}</p>
-                <p><strong>{t.phoneLabel}:</strong> {patient.phone}</p>
+            {filteredPatients.length === 0 ? (
+              <div className="no-patients-message">
+                {searchTerm ? 'Ingen patienter fundet for din søgning' : 'Ingen patienter endnu'}
               </div>
-            ))}
+            ) : (
+              filteredPatients.map(patient => (
+                <div 
+                  key={patient.id} 
+                  className={`patient-card ${selectedPatient?.id === patient.id ? 'selected' : ''}`}
+                  onClick={() => handleSelectPatient(patient)}
+                >
+                  <h3>{patient.name}</h3>
+                  <p><strong>{t.ageLabel}:</strong> {patient.age}</p>
+                  <p><strong>Seneste status:</strong> {getLatestQuestionnaireStatus(patient)}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -506,6 +602,25 @@ const Overview = () => {
                     ))}
                   </select>
                 </div>
+                
+                {/* Employee assignment - only show for admin users */}
+                {currentUser?.role === 'admin' && (
+                  <div className="form-group">
+                    <label htmlFor="assignedTo">Tildelt til medarbejder</label>
+                    <select
+                      id="assignedTo"
+                      name="assignedTo"
+                      value={newPatient.assignedTo || ''}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Vælg medarbejder...</option>
+                      <option value="marianne">Marianne</option>
+                      <option value="karin">Karin</option>
+                      <option value="medarbejder1">Medarbejder 1</option>
+                    </select>
+                  </div>
+                )}
                 
                 {/* Questionnaire selection - only show when adding new patient */}
                 {showAddForm && (

@@ -103,11 +103,11 @@ const QuestionEditor = ({ question, onUpdate, onDelete, onMoveUp, onMoveDown, ca
           <div className="basic-config">
             <div className="config-field">
               <label>Spørgsmål Tekst *</label>
-              <input
-                type="text"
+              <textarea
                 value={question.question}
                 onChange={(e) => handleFieldChange('question', e.target.value)}
                 placeholder="Indtast dit spørgsmål her"
+                rows="3"
                 required
               />
             </div>

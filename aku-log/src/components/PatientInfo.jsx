@@ -165,15 +165,7 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
           
           // Format answers based on question type
           if (question.type === 'scale' && answer !== undefined) {
-            const scaleLabels = {
-              '0': 'På intet tidspunkt',
-              '1': 'En lille del af tiden', 
-              '2': 'Lidt under halvdelen af tiden',
-              '3': 'Lidt over halvdelen af tiden',
-              '4': 'Det meste af tiden',
-              '5': 'Hele tiden'
-            }
-            formattedAnswer = `${answer}/5 - ${scaleLabels[answer] || answer}`
+            formattedAnswer = answer.toString()
           } else if (Array.isArray(answer)) {
             formattedAnswer = answer.join(', ')
           }

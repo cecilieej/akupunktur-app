@@ -118,7 +118,7 @@
 .scale-option {
   flex: 1;
   min-width: 0;
-  max-width: 140px;
+  max-width: 80px;
   text-align: center;
   cursor: pointer;
   border: 2px solid #e1e5e9;
@@ -160,27 +160,14 @@
 }
 
 .scale-value {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 0.75rem;
   transition: all 0.2s ease;
 }
 
 .scale-option input[type="radio"]:checked + .scale-value {
   color: #A7BF97;
-}
-
-.scale-label {
-  font-size: 0.8rem;
-  color: #666;
-  line-height: 1.2;
-  padding: 0 0.25rem;
-  min-height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
 }
 
 /* Multiple Choice Questions */
@@ -385,15 +372,7 @@
   }
   
   .scale-value {
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-  }
-  
-  .scale-label {
-    font-size: 0.7rem;
-    min-height: 1.5rem;
-    line-height: 1.1;
-    padding: 0 0.1rem;
+    font-size: 1.4rem;
   }
   
   .question-input {

@@ -34,15 +34,6 @@ const QuestionnaireResults = ({ questionnaire, onClose, onEditDate }) => {
         return (
           <div className="answer-scale">
             <span className="scale-value">{answer}</span>
-            <span className="scale-label">
-              {answer === '0' || answer === 0 ? 'På intet tidspunkt' :
-               answer === '1' || answer === 1 ? 'En lille del af tiden' :
-               answer === '2' || answer === 2 ? 'Lidt under halvdelen af tiden' :
-               answer === '3' || answer === 3 ? 'Lidt over halvdelen af tiden' :
-               answer === '4' || answer === 4 ? 'Det meste af tiden' :
-               answer === '5' || answer === 5 ? 'Hele tiden' :
-               `${answer}/5`}
-            </span>
           </div>
         )
       case 'multiple_choice':
