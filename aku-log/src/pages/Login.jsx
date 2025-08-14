@@ -49,7 +49,7 @@ const Login = () => {
               name="email"
               value={credentials.email}
               onChange={handleChange}
-              placeholder="eks. admin@akupunktur.dk"
+              placeholder="eks. demo@akupunktur.dk"
               required
             />
           </div>
@@ -73,13 +73,6 @@ const Login = () => {
             {loading ? 'Logger ind...' : t.login}
           </button>
         </form>
-        
-        {/* Demo credentials for testing */}
-        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '12px' }}>
-          <strong>Demo login:</strong><br />
-          admin@akupunktur.dk / password123<br />
-          medarbejder1@akupunktur.dk / password123
-        </div>
       </div>
     </div>
   )

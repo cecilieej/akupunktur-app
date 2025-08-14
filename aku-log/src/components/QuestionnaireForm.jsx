@@ -80,10 +80,15 @@ const QuestionnaireForm = () => {
     
     switch (question.type) {
       case 'scale':
+        // Generate scale values based on question's min and max properties
+        const minValue = question.min || 0
+        const maxValue = question.max || 10
+        const scaleValues = Array.from({ length: maxValue - minValue + 1 }, (_, i) => minValue + i)
+        
         return (
           <div className="scale-question">
             <div className="scale-options">
-              {[0, 1, 2, 3, 4, 5].map((scaleValue) => (
+              {scaleValues.map((scaleValue) => (
                 <label key={scaleValue} className="scale-option">
                   <input
                     type="radio"

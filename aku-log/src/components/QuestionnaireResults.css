@@ -140,11 +140,28 @@
   margin-bottom: 0.75rem;
   color: #333;
   line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.question-text span:last-child {
+  flex: 1;
 }
 
 .question-number {
-  color: #666;
-  margin-right: 0.5rem;
+  background: #6c757d;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .answer-container {

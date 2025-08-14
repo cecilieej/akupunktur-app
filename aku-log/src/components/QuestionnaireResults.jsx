@@ -96,8 +96,8 @@ const QuestionnaireResults = ({ questionnaire, onClose, onEditDate }) => {
               questionnaire.questions.map((question, index) => (
                 <div key={question.id} className="question-result">
                   <div className="question-text">
-                    <span className="question-number">{index + 1}.</span>
-                    {question.question}
+                    <span className="question-number">{index + 1}</span>
+                    <span>{question.question}</span>
                   </div>
                   <div className="answer-container">
                     {renderAnswer(question, questionnaire.responses?.[question.id])}

@@ -15,26 +15,22 @@ const Overview = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [availableQuestionnaires, setAvailableQuestionnaires] = useState([])
-  const [showSearch, setShowSearch] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name') // 'name' or 'status'
+  const [showSearch, setShowSearch] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+
+  // Load current user on component mount
+  useEffect(() => {
+    const user = authService.getCurrentUser()
+    setCurrentUser(user)
+  }, [])
 
   // Load patients from Firebase on component mount
   useEffect(() => {
-    // Get current user first
-    const user = authService.getCurrentUser()
-    setCurrentUser(user)
-    
     loadPatientsFromFirebase()
     loadQuestionnaires()
   }, [])
-
-  // Reload patients when user changes
-  useEffect(() => {
-    if (currentUser) {
-      loadPatientsFromFirebase()
-    }
-  }, [currentUser])
 
   // Update selected patient when patients array changes (for real-time updates)
   useEffect(() => {
@@ -158,6 +154,39 @@ const Overview = () => {
     condition: '',
     selectedQuestionnaires: []
   })
+
+  // Helper function to get patient's latest questionnaire status
+  const getPatientStatus = (patient) => {
+    if (!patient.questionnaires || patient.questionnaires.length === 0) {
+      return 'ingen'
+    }
+    
+    const hasCompleted = patient.questionnaires.some(q => q.status === 'completed')
+    const hasPending = patient.questionnaires.some(q => q.status === 'pending')
+    
+    if (hasCompleted && hasPending) return 'delvis'
+    if (hasCompleted) return 'gennemført'
+    return 'afventer'
+  }
+
+  // Filter and sort patients
+  const getFilteredAndSortedPatients = () => {
+    let filtered = patients.filter(patient =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    return filtered.sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name, 'da')
+      } else if (sortBy === 'status') {
+        const statusOrder = { 'afventer': 0, 'delvis': 1, 'gennemført': 2, 'ingen': 3 }
+        const statusA = getPatientStatus(a)
+        const statusB = getPatientStatus(b)
+        return statusOrder[statusA] - statusOrder[statusB]
+      }
+      return 0
+    })
+  }
 
   const handleSelectPatient = (patient) => {
     // Toggle functionality: if clicking the same patient, unselect it
@@ -410,28 +439,6 @@ const Overview = () => {
     }
   }
 
-  // Helper function to get latest questionnaire status
-  const getLatestQuestionnaireStatus = (patient) => {
-    if (!patient.questionnaires || patient.questionnaires.length === 0) {
-      return 'Ingen spørgeskemaer'
-    }
-    
-    // Sort by date (most recent first)
-    const sorted = [...patient.questionnaires].sort((a, b) => {
-      const dateA = new Date(a.dateCompleted || a.assignedDate || 0)
-      const dateB = new Date(b.dateCompleted || b.assignedDate || 0)
-      return dateB - dateA
-    })
-    
-    const latest = sorted[0]
-    return latest.status === 'completed' ? 'Gennemført' : 'Afventer'
-  }
-
-  // Filter patients based on search term
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
   return (
     <div className="overview-container">
       <div className="overview-header">
@@ -503,25 +510,35 @@ const Overview = () => {
             </button>
           </div>
           
+          {/* Sort Controls - always visible */}
+          <div className="sort-controls-always">
+            <label>Sortér:</label>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="name">Navn</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+          
+          {/* Search Controls - only show when toggled */}
           {showSearch && (
-            <div className="search-field">
-              <input
-                type="text"
-                placeholder="Søg efter patient navn..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
+            <div className="search-controls">
+              <div className="search-box">
+                <span className="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Søg patienter..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  autoFocus
+                />
+              </div>
             </div>
           )}
           
           <div className="patient-cards">
-            {filteredPatients.length === 0 ? (
-              <div className="no-patients-message">
-                {searchTerm ? 'Ingen patienter fundet for din søgning' : 'Ingen patienter endnu'}
-              </div>
-            ) : (
-              filteredPatients.map(patient => (
+            {getFilteredAndSortedPatients().map(patient => {
+              const status = getPatientStatus(patient)
+              return (
                 <div 
                   key={patient.id} 
                   className={`patient-card ${selectedPatient?.id === patient.id ? 'selected' : ''}`}
@@ -529,10 +546,10 @@ const Overview = () => {
                 >
                   <h3>{patient.name}</h3>
                   <p><strong>{t.ageLabel}:</strong> {patient.age}</p>
-                  <p><strong>Seneste status:</strong> {getLatestQuestionnaireStatus(patient)}</p>
+                  <p><strong>Status:</strong> <span className={`status-${status}`}>{status}</span></p>
                 </div>
-              ))
-            )}
+              )
+            })}
           </div>
         </div>
 
