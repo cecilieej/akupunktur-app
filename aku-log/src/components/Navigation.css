@@ -29,6 +29,28 @@
   padding: 0.5rem 1rem;
   background: #f8f9fa;
   border-radius: 20px;
+  border: none;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  vertical-align: middle;
+  line-height: 1;
+  min-height: 2.2rem;
+  box-sizing: border-box;
+}
+
+.user-info.clickable {
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.user-info.clickable:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link {
@@ -38,6 +60,15 @@
   border-radius: 6px;
   transition: all 0.3s ease;
   font-weight: 500;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.2rem;
+  box-sizing: border-box;
 }
 
 .nav-link:hover {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { patientQuestionnairesService } from '../services/firebaseService'
+import { patientQuestionnairesService, patientsService } from '../services/firebaseService'
 import { validateQuestionnaireAccess } from '../utils/tokenUtils'
 import './QuestionnaireForm.css'
 
@@ -9,6 +9,7 @@ const QuestionnaireForm = () => {
   const navigate = useNavigate()
   
   const [questionnaire, setQuestionnaire] = useState(null)
+  const [patient, setPatient] = useState(null)
   const [responses, setResponses] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -27,6 +28,17 @@ const QuestionnaireForm = () => {
       validateQuestionnaireAccess(data)
       
       setQuestionnaire(data)
+      
+      // Load patient information
+      if (data.patientId) {
+        try {
+          const patientData = await patientsService.getById(data.patientId)
+          setPatient(patientData)
+        } catch (patientError) {
+          console.error('Error loading patient data:', patientError)
+        }
+      }
+      
       setError('')
     } catch (err) {
       setError(err.message)
@@ -220,13 +232,19 @@ const QuestionnaireForm = () => {
     <div className="questionnaire-container">
       <div className="questionnaire-header">
         <h1>{questionnaire.title}</h1>
-        <p className="description">{questionnaire.description}</p>
-        {questionnaire.instructions && questionnaire.instructions.trim() && (
-          <div className="instructions">
-            <strong>Instruktioner:</strong> {questionnaire.instructions}
-          </div>
+        {patient && (
+          <p className="patient-name">
+            <strong>Patient:</strong> {patient.name.split(' ')[0]}
+          </p>
         )}
+        <p className="description">{questionnaire.description}</p>
       </div>
+
+      {questionnaire.instructions && questionnaire.instructions.trim() && (
+        <div className="instructions sticky-instructions">
+          <strong>Instruktioner:</strong> {questionnaire.instructions}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="questionnaire-form">
         {questionnaire.questions.map((question, index) => (

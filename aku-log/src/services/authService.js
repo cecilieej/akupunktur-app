@@ -4,7 +4,10 @@ import {
   signOut, 
   onAuthStateChanged, 
   createUserWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from 'firebase/auth'
 import { auth } from '../config/firebase'
 
@@ -106,5 +109,53 @@ export const authService = {
   // Listen to authentication state changes
   onAuthStateChanged(callback) {
     return onAuthStateChanged(auth, callback)
+  },
+
+  // Re-authenticate user with current password (required for sensitive operations)
+  async reauthenticate(currentPassword) {
+    try {
+      const user = auth.currentUser
+      if (!user) {
+        throw new Error('Ingen bruger er logget ind')
+      }
+      
+      const credential = EmailAuthProvider.credential(user.email, currentPassword)
+      await reauthenticateWithCredential(user, credential)
+      return true
+    } catch (error) {
+      console.error('Re-authentication error:', error)
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        throw new Error('Forkert nuværende adgangskode')
+      }
+      if (error.code === 'auth/too-many-requests') {
+        throw new Error('For mange forsøg. Prøv igen senere.')
+      }
+      if (error.code === 'auth/user-mismatch') {
+        throw new Error('Bruger matcher ikke')
+      }
+      throw new Error('Fejl ved bekræftelse af identitet')
+    }
+  },
+
+  // Update user password
+  async updatePassword(newPassword) {
+    try {
+      const user = auth.currentUser
+      if (!user) {
+        throw new Error('Ingen bruger er logget ind')
+      }
+      
+      await updatePassword(user, newPassword)
+      return true
+    } catch (error) {
+      console.error('Password update error:', error)
+      if (error.code === 'auth/requires-recent-login') {
+        throw new Error('Du skal bekræfte din identitet før du kan ændre adgangskode')
+      }
+      if (error.code === 'auth/weak-password') {
+        throw new Error('Adgangskoden er for svag')
+      }
+      throw new Error('Fejl ved opdatering af adgangskode')
+    }
   }
 }

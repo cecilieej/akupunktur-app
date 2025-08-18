@@ -1,12 +1,15 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { authService } from '../services/authService'
 import { danishTexts } from '../data/danishTexts'
+import AccountSettings from './AccountSettings'
 import './Navigation.css'
 
 const Navigation = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const t = danishTexts
+  const [showAccountSettings, setShowAccountSettings] = useState(false)
   
   // Don't show navigation on login page or patient questionnaire pages
   if (location.pathname === '/login' || location.pathname.includes('/questionnaire/')) {
@@ -45,13 +48,19 @@ const Navigation = () => {
             {location.pathname.includes('/admin') ? 'Oversigt' : 'Admin'}
           </Link>
         )}
-        <span className="user-info">
+        <button 
+          onClick={() => setShowAccountSettings(true)}
+          className="user-info clickable"
+        >
           Velkommen, {currentUser?.name}
-        </span>
+        </button>
         <button onClick={handleLogout} className="nav-link logout">
           {t.logout}
         </button>
       </div>
+      {showAccountSettings && (
+        <AccountSettings onClose={() => setShowAccountSettings(false)} />
+      )}
     </nav>
   )
 }
