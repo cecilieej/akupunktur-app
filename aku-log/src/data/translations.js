@@ -66,33 +66,6 @@ export const translations = {
     pending: 'Afventer',
     overdue: 'Forsinket',
     
-    // Questionnaire templates
-    questionnaireTemplates: {
-      'who5': {
-        title: 'WHO-5 Trivselsskala',
-        description: 'Måler psykologisk trivsel'
-      },
-      'rbmt': {
-        title: 'Rivermead Behavioural Memory Test (RBMT)',
-        description: 'Test af hukommelse og kognitive funktioner'
-      },
-      'pain-scale': {
-        title: 'Smerteassessmentskala',
-        description: 'Omfattende smertevaluering'
-      },
-      'initial-health': {
-        title: 'Indledende Helbredsvurdering',
-        description: 'Generel sundhed og sygehistorie'
-      },
-      'treatment-progress': {
-        title: 'Behandlingsforløb Evaluering',
-        description: 'Fremskridtssporing spørgeskema'
-      },
-      'lifestyle': {
-        title: 'Livsstilsvurdering',
-        description: 'Kost, motion og livsstilsvaner'
-      }
-    },
     
     // Questionnaire page
     loadingQuestionnaire: 'Indlæser spørgeskema...',
@@ -180,33 +153,6 @@ export const translations = {
     pending: 'Pending',
     overdue: 'Overdue',
     
-    // Questionnaire templates
-    questionnaireTemplates: {
-      'who5': {
-        title: 'WHO-5 Well-Being Index',
-        description: 'Measures psychological well-being'
-      },
-      'rbmt': {
-        title: 'Rivermead Behavioural Memory Test (RBMT)',
-        description: 'Memory and cognitive function assessment'
-      },
-      'pain-scale': {
-        title: 'Pain Assessment Scale',
-        description: 'Comprehensive pain evaluation'
-      },
-      'initial-health': {
-        title: 'Initial Health Assessment',
-        description: 'General health and medical history'
-      },
-      'treatment-progress': {
-        title: 'Treatment Progress Review',
-        description: 'Progress tracking questionnaire'
-      },
-      'lifestyle': {
-        title: 'Lifestyle Assessment',
-        description: 'Diet, exercise, and lifestyle habits'
-      }
-    },
     
     // Questionnaire page
     loadingQuestionnaire: 'Loading questionnaire...',

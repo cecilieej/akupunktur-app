@@ -4,7 +4,6 @@ import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Overview from './pages/Overview'
-import Questionnaire from './pages/Questionnaire'
 import QuestionnaireForm from './components/QuestionnaireForm'
 import QuestionnaireSuccess from './components/QuestionnaireSuccess'
 import QuestionnaireManager from './pages/admin/QuestionnaireManager'
@@ -34,16 +33,6 @@ function App() {
                   <Navigation />
                   <main className="main-content">
                     <Overview />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            } />
-            <Route path="/questionnaire/:id" element={
-              <ProtectedRoute>
-                <div>
-                  <Navigation />
-                  <main className="main-content">
-                    <Questionnaire />
                   </main>
                 </div>
               </ProtectedRoute>

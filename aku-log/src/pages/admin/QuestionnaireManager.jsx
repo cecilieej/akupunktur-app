@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../services/authService'
 import { questionnaireService } from '../../services/questionnaireService'
-import { questionnaireTemplates } from '../../data/questionnaireTemplates'
 import './QuestionnaireManager.css'
 
 const QuestionnaireManager = () => {
@@ -29,18 +28,7 @@ const QuestionnaireManager = () => {
       setError('')
       const firestoreQuestionnaires = await questionnaireService.getAllQuestionnaires()
       
-      // Combine Firestore questionnaires with template questionnaires
-      const templateQuestionnaires = Object.entries(questionnaireTemplates).map(([key, template]) => ({
-        id: key,
-        title: template.title,
-        description: template.description || template.instructions,
-        questions: template.questions,
-        isTemplate: true,
-        createdAt: null,
-        lastModified: null
-      }))
-      
-      setQuestionnaires([...firestoreQuestionnaires, ...templateQuestionnaires])
+      setQuestionnaires(firestoreQuestionnaires)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -58,23 +46,6 @@ const QuestionnaireManager = () => {
     try {
       await questionnaireService.deleteQuestionnaire(id)
       setDeleteConfirm(null)
-      loadQuestionnaires() // Reload list
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
-  const handleMigrateTemplate = async (template) => {
-    try {
-      const questionnaireData = {
-        title: template.title,
-        description: template.description || template.instructions,
-        questions: template.questions,
-        originalTemplateId: template.id,
-        createdBy: authService.getCurrentUser()?.email
-      }
-      
-      await questionnaireService.createQuestionnaire(questionnaireData)
       loadQuestionnaires() // Reload list
     } catch (err) {
       setError(err.message)
@@ -112,9 +83,6 @@ const QuestionnaireManager = () => {
           <div key={questionnaire.id} className="questionnaire-card">
             <div className="card-header">
               <h3>{questionnaire.title}</h3>
-              {questionnaire.isTemplate && (
-                <span className="template-badge">Template</span>
-              )}
             </div>
             
             <div className="card-content">
@@ -135,37 +103,18 @@ const QuestionnaireManager = () => {
             </div>
             
             <div className="card-actions">
-              {questionnaire.isTemplate ? (
-                <>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleEdit(questionnaire)}
-                  >
-                    Se Detaljer
-                  </button>
-                  <button 
-                    className="btn btn-primary"
-                    onClick={() => handleMigrateTemplate(questionnaire)}
-                  >
-                    Migrer
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleEdit(questionnaire)}
-                  >
-                    Rediger
-                  </button>
-                  <button 
-                    className="btn btn-danger"
-                    onClick={() => setDeleteConfirm(questionnaire.id)}
-                  >
-                    Slet
-                  </button>
-                </>
-              )}
+              <button 
+                className="btn btn-secondary"
+                onClick={() => handleEdit(questionnaire)}
+              >
+                Rediger
+              </button>
+              <button 
+                className="btn btn-danger"
+                onClick={() => setDeleteConfirm(questionnaire.id)}
+              >
+                Slet
+              </button>
             </div>
           </div>
         ))}

@@ -9,25 +9,56 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider
 } from 'firebase/auth'
-import { auth } from '../config/firebase'
-
-// Define user roles - you can store these in Firestore for more complex role management
-const USER_ROLES = {
-  'admin@akupunktur.dk': { role: 'admin', name: 'Administrator' },
-  'medarbejder1@akupunktur.dk': { role: 'employee', name: 'Demo Medarbejder', employeeId: 'medarbejder1' },
-  'marianne@akupunktur.dk': { role: 'employee', name: 'Marianne', employeeId: 'marianne' },
-  'karin@akupunktur.dk': { role: 'employee', name: 'Karin', employeeId: 'karin' }
-}
+import { doc, getDoc } from 'firebase/firestore'
+import { auth, db } from '../config/firebase'
 
 export const authService = {
+  // Get user role from Firestore
+  async getUserRole(email) {
+    try {
+      const userRoleDoc = await getDoc(doc(db, 'userRoles', email))
+      
+      if (userRoleDoc.exists()) {
+        const userData = userRoleDoc.data()
+        return {
+          role: userData.role,
+          name: userData.name,
+          employeeId: userData.employeeId,
+          isActive: userData.isActive !== false // Default to true if not specified
+        }
+      }
+      
+      // Default role for unknown users
+      return {
+        role: 'employee',
+        name: 'Unknown User',
+        employeeId: 'unknown',
+        isActive: false
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error)
+      return {
+        role: 'employee',
+        name: 'Unknown User',
+        employeeId: 'unknown',
+        isActive: false
+      }
+    }
+  },
   // Login function
   async login(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
       
-      // Get user role from predefined roles or default to 'user'
-      const userRole = USER_ROLES[email] || { role: 'employee', name: user.displayName || 'User', employeeId: 'unknown' }
+      // Get user role from Firestore
+      const userRole = await this.getUserRole(email)
+      
+      // Check if user is active
+      if (!userRole.isActive) {
+        await this.logout()
+        throw new Error('Din konto er deaktiveret. Kontakt administratoren.')
+      }
       
       const authData = {
         uid: user.uid,
@@ -38,9 +69,15 @@ export const authService = {
         loginTime: new Date().toISOString()
       }
       
+      // Cache the role data for sync operations
+      this.cacheUserRole(email, userRole)
+      
       return authData
     } catch (error) {
       console.error('Login error:', error)
+      if (error.message.includes('deaktiveret')) {
+        throw error // Re-throw custom messages
+      }
       throw new Error('Ugyldige login oplysninger')
     }
   },
@@ -69,9 +106,52 @@ export const authService = {
     }
   },
 
+  // Get current user (enhanced with cached data)
+  getCurrentUser() {
+    const user = auth.currentUser
+    if (!user) return null
+    
+    // Try to get cached role data first
+    const cachedRole = localStorage.getItem(`userRole_${user.email}`)
+    
+    if (cachedRole) {
+      const userRole = JSON.parse(cachedRole)
+      return {
+        uid: user.uid,
+        email: user.email,
+        role: userRole.role,
+        name: userRole.name,
+        employeeId: userRole.employeeId
+      }
+    }
+    
+    // Fallback if no cached data
+    return {
+      uid: user.uid,
+      email: user.email,
+      role: 'employee',
+      name: user.displayName || 'User',
+      employeeId: 'unknown'
+    }
+  },
+
+  // Cache user role data
+  cacheUserRole(email, roleData) {
+    localStorage.setItem(`userRole_${email}`, JSON.stringify(roleData))
+  },
+
+  // Clear cached user role data
+  clearCachedUserRole(email) {
+    localStorage.removeItem(`userRole_${email}`)
+  },
+
   // Logout function
   async logout() {
     try {
+      const user = auth.currentUser
+      if (user) {
+        this.clearCachedUserRole(user.email)
+      }
       await signOut(auth)
     } catch (error) {
       console.error('Logout error:', error)
@@ -82,22 +162,6 @@ export const authService = {
   // Check if user is authenticated
   isAuthenticated() {
     return auth.currentUser !== null
-  },
-
-  // Get current user
-  getCurrentUser() {
-    const user = auth.currentUser
-    if (!user) return null
-    
-    const userRole = USER_ROLES[user.email] || { role: 'employee', name: user.displayName || 'User', employeeId: 'unknown' }
-    
-    return {
-      uid: user.uid,
-      email: user.email,
-      role: userRole.role,
-      name: userRole.name,
-      employeeId: userRole.employeeId
-    }
   },
 
   // Check if user is admin

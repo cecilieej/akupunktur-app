@@ -66,33 +66,6 @@ export const danishTexts = {
   pending: 'Afventer',
   overdue: 'Forsinket',
   
-  // Questionnaire templates
-  questionnaireTemplates: {
-    'who5': {
-      title: 'WHO-5 Trivselsskala',
-      description: 'Måler psykologisk trivsel'
-    },
-    'rbmt': {
-      title: 'Rivermead Behavioural Memory Test (RBMT)',
-      description: 'Test af hukommelse og kognitive funktioner'
-    },
-    'pain-scale': {
-      title: 'Smerteassessmentskala',
-      description: 'Omfattende smertevaluering'
-    },
-    'initial-health': {
-      title: 'Indledende Helbredsvurdering',
-      description: 'Generel sundhed og sygehistorie'
-    },
-    'treatment-progress': {
-      title: 'Behandlingsforløb Evaluering',
-      description: 'Fremskridtssporing spørgeskema'
-    },
-    'lifestyle': {
-      title: 'Livsstilsvurdering',
-      description: 'Daglige vaner og livsstil'
-    }
-  },
 
   // Authentication
   invalidCredentials: 'Ugyldige login oplysninger',

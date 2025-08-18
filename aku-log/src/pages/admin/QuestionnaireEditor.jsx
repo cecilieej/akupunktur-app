@@ -259,7 +259,7 @@ const QuestionnaireEditor = () => {
                 className="btn btn-primary"
                 onClick={() => setShowTypeSelector(true)}
               >
-                Tilføj Dit Første Spørgsmål
+                Tilføj et spørgsmål
               </button>
             </div>
           )}
