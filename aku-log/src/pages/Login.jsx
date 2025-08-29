@@ -64,7 +64,7 @@ const Login = () => {
                 name="email"
                 value={credentials.email}
                 onChange={handleChange}
-                placeholder="eks. demo@akupunktur.dk"
+                placeholder="eks. medarbejder1@akupunktur.dk"
                 required
               />
             </div>
