@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { authService } from '../services/authService'
+import { handleErrorForAlert } from '../utils/errorHandling'
 import './AccountSettings.css'
 
 const AccountSettings = ({ onClose }) => {
@@ -74,8 +75,9 @@ const AccountSettings = ({ onClose }) => {
     } catch (error) {
       console.error('Error updating password:', error)
       
-      // Use the message from our authService which provides better Danish error messages
-      setError(error.message || 'Fejl ved opdatering af adgangskode. Prøv igen.')
+      // Use the centralized error handling for consistent error messages
+      const errorMessage = handleErrorForAlert(error)
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

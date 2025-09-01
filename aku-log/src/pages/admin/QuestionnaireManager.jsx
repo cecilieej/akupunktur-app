@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../services/authService'
 import { questionnaireService } from '../../services/questionnaireService'
+import { handleFirebaseError } from '../../utils/errorHandling'
 import './QuestionnaireManager.css'
 
 const QuestionnaireManager = () => {
@@ -30,7 +31,7 @@ const QuestionnaireManager = () => {
       
       setQuestionnaires(firestoreQuestionnaires)
     } catch (err) {
-      setError(err.message)
+      handleFirebaseError(err, setError, navigate)
     } finally {
       setLoading(false)
     }
@@ -48,7 +49,7 @@ const QuestionnaireManager = () => {
       setDeleteConfirm(null)
       loadQuestionnaires() // Reload list
     } catch (err) {
-      setError(err.message)
+      handleFirebaseError(err, setError, navigate)
     }
   }
 

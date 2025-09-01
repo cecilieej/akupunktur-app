@@ -4,6 +4,7 @@ import { patientsService, questionnairesService, patientQuestionnairesService } 
 import { questionnaireService } from '../services/questionnaireService'
 import { authService } from '../services/authService'
 import { generateAccessToken } from '../utils/tokenUtils'
+import { handleFirebaseError, hasPermission } from '../utils/errorHandling'
 import PatientInfo from '../components/PatientInfo'
 import './Overview.css'
 
@@ -90,7 +91,17 @@ const Overview = () => {
   const loadPatientsFromFirebase = async () => {
     try {
       setLoading(true)
-      const firebasePatients = await patientsService.getAll()
+      setError('')
+      
+      // Get current user to determine access level
+      const currentUser = authService.getCurrentUser()
+      console.log('Loading patients, current user:', currentUser)
+      
+      // Pass user role and employeeId to service for proper filtering
+      const firebasePatients = await patientsService.getAll(
+        currentUser?.role, 
+        currentUser?.employeeId
+      )
       
       // Load questionnaires for each patient
       const patientsWithQuestionnaires = await Promise.all(
@@ -112,32 +123,23 @@ const Overview = () => {
               }))
             }
           } catch (error) {
+            // Handle authentication/permission errors for questionnaires
+            if (error.code === 'permission-denied') {
+              console.warn(`Access denied for questionnaires for patient ${patient.id}:`, error)
+              return { ...patient, questionnaires: [] }
+            }
             console.warn(`Error loading questionnaires for patient ${patient.id}:`, error)
             return { ...patient, questionnaires: [] }
           }
         })
       )
       
-      // Filter patients based on user role
-      const user = currentUser || authService.getCurrentUser()
-      let filteredPatients = patientsWithQuestionnaires
+      // No need for additional filtering since the service now handles role-based access
+      console.log('Loaded patients:', firebasePatients.map(p => ({ id: p.id, name: p.name, assignedTo: p.assignedTo })))
       
-      console.log('Current user:', user)
-      console.log('All patients before filtering:', patientsWithQuestionnaires.map(p => ({ id: p.id, name: p.name, assignedTo: p.assignedTo })))
-      
-      if (user && user.role === 'employee') {
-        // Employees can only see their own patients
-        filteredPatients = patientsWithQuestionnaires.filter(patient => 
-          patient.assignedTo === user.employeeId
-        )
-        console.log('Filtered patients for employee:', filteredPatients.map(p => ({ id: p.id, name: p.name, assignedTo: p.assignedTo })))
-      }
-      // Admin users see all patients (no filtering needed)
-      
-      setPatients(filteredPatients)
+      setPatients(patientsWithQuestionnaires)
     } catch (err) {
-      console.warn('Firebase not available:', err.message)
-      setError('Fejl ved indlæsning af patienter fra Firebase.')
+      handleFirebaseError(err, setError)
     } finally {
       setLoading(false)
     }
@@ -282,8 +284,7 @@ const Overview = () => {
       setShowAddForm(false)
       
     } catch (error) {
-      console.error('Error adding patient:', error)
-      setError('Fejl ved tilføjelse af patient. Prøv igen.')
+      handleFirebaseError(error, setError)
     } finally {
       setLoading(false)
     }
@@ -324,8 +325,7 @@ const Overview = () => {
       setShowEditForm(false)
       
     } catch (error) {
-      console.error('Error updating patient:', error)
-      setError('Fejl ved opdatering af patient. Prøv igen.')
+      handleFirebaseError(error, setError)
     } finally {
       setLoading(false)
     }
@@ -352,8 +352,7 @@ const Overview = () => {
           setSelectedPatient(null)
         }
       } catch (error) {
-        console.error('Error deleting patient:', error)
-        setError('Fejl ved sletning af patient. Prøv igen.')
+        handleFirebaseError(error, setError)
       } finally {
         setLoading(false)
       }

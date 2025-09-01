@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../services/authService'
 import { danishTexts } from '../data/danishTexts'
+import { handleFirebaseError } from '../utils/errorHandling'
 import './Login.css'
 
 const Login = () => {
@@ -23,7 +24,7 @@ const Login = () => {
       await authService.login(credentials.email, credentials.password)
       navigate('/overview')
     } catch (err) {
-      setError(err.message)
+      handleFirebaseError(err, setError, navigate)
     } finally {
       setLoading(false)
     }

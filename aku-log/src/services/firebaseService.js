@@ -15,10 +15,23 @@ import { db } from '../config/firebase'
 
 // Patients CRUD operations
 export const patientsService = {
-  // Get all patients
-  async getAll() {
+  // Get all patients (admin only) or assigned patients (employees)
+  async getAll(userRole = null, employeeId = null) {
     try {
-      const querySnapshot = await getDocs(collection(db, 'patients'))
+      let querySnapshot
+      
+      // If employee role and employeeId provided, filter by assignedTo
+      if (userRole === 'employee' && employeeId) {
+        const q = query(
+          collection(db, 'patients'),
+          where('assignedTo', '==', employeeId)
+        )
+        querySnapshot = await getDocs(q)
+      } else {
+        // Admin can get all patients
+        querySnapshot = await getDocs(collection(db, 'patients'))
+      }
+      
       const patients = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

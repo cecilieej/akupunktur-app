@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as XLSX from 'xlsx'
 import { danishTexts } from '../data/danishTexts'
 import { patientQuestionnairesService, patientsService } from '../services/firebaseService'
+import { handleErrorForAlert } from '../utils/errorHandling'
 import QuestionnaireGroup from './QuestionnaireGroup'
 import QuestionnaireResults from './QuestionnaireResults'
 import './PatientInfo.css'
@@ -58,8 +59,8 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
         onUpdatePatient()
       }
     } catch (error) {
-      console.error('Error updating questionnaire date:', error)
-      alert('Fejl ved opdatering af dato')
+      const errorMessage = handleErrorForAlert(error)
+      alert(errorMessage)
     }
   }
 
@@ -76,8 +77,8 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
         onUpdatePatient()
       }
     } catch (error) {
-      console.error('Error saving treatment notes:', error)
-      alert('Fejl ved gem af notater')
+      const errorMessage = handleErrorForAlert(error)
+      alert(errorMessage)
     }
   }
 
@@ -101,8 +102,8 @@ const PatientInfo = ({ patient, onEdit, onDelete, availableQuestionnaires, onAdd
           onUpdatePatient()
         }
       } catch (error) {
-        console.error('Error deleting treatment notes:', error)
-        alert('Fejl ved sletning af notater')
+        const errorMessage = handleErrorForAlert(error)
+        alert(errorMessage)
       }
     }
   }
